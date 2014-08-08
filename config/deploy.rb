@@ -93,14 +93,14 @@ namespace :ruby do
       else
         execute "cd ~/.rbenv && git pull"
       end
-      #if capture("if grep rbenv ~/.bashrc; then echo 'true'; fi") == ''
+      if capture("if grep rbenv ~/.bashrc; then echo 'true'; fi") == ''
         execute "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' >> ~/.bashrc"
         execute "echo 'eval \"$(rbenv init -)\"' >> ~/.bashrc"
         execute "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' >> ~/.bash_profile"
         execute "echo 'eval \"$(rbenv init -)\"' >> ~/.bash_profile"
-      #end
-      execute "echo $PATH"
-      execute "source ~/.bash_profile"
+      end
+      execute "echo $SHELL"
+      execute "shopt -q login_shell && echo 'Login shell' || echo 'Not login shell'"
       execute "echo $PATH"
       if capture("if [ -d ~/.rbenv/plugins/ruby-build ]; then echo 'true'; fi") == ''
         execute "git clone https://github.com/sstephenson/ruby-build ~/.rbenv/plugins/ruby-build"
