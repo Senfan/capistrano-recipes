@@ -1,13 +1,13 @@
 # config valid only for Capistrano 3.1
 lock '3.2.1'
 
-user="deploy"
+user="deploy1"
 HOME="/home/#{user}"
 ruby_version="2.1.2"
 set :host, "10.110.125.211"
 
 set :application, 'test'
-set :user, 'deploy'
+set :user, 'deploy1'
 set :scm, :git
 set :repo_url, 'https://github.com/teddy-hoo/test.git'
 set :deploy_to, "/home/#{user}/webapp"
@@ -15,7 +15,7 @@ set :pty, true
 
 set :stage, :staging
 set :branch, "master"
-role :web, %w{deploy@10.110.125.211}
+role :web, %w{deploy2@10.110.126.85}
 
 set :bundle_roles, :all
 set :bundle_servers, -> { release_roles(fetch(:bundle_roles)) }
@@ -50,10 +50,45 @@ namespace :env do
   end
 end
 
+namespace :ruby do
+
+  desc "install rbenv, ruby, and bundler"
+  task :setup do
+    on roles(:web) do
+      if capture("if [ -d ~/.rbenv ]; then echo 'true'; fi") == ''
+        execute "git clone https://github.com/sstephenson/rbenv.git ~/.rbenv"
+      else
+        execute "cd ~/.rbenv && git pull"
+      end
+      if capture("if grep rbenv ~/.bashrc; then echo 'true'; fi") == ''
+        execute "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' | cat - ~/.bashrc > tmp"
+        execute "echo 'eval $(rbenv init -)' | cat tmp > tmp1"
+        execute "mv ~/tmp1 ~/.bashrc"
+        execute "rm ~/tmp"
+        execute ". ~/.bashrc"
+      end
+      if capture("if [ -d ~/.rbenv/plugins/ruby-build ]; then echo 'true'; fi") == ''
+        execute "git clone https://github.com/sstephenson/ruby-build ~/.rbenv/plugins/ruby-build"
+        execute "rbenv rehash"
+      else
+        execute "cd ~/.rbenv/plugins/ruby-build && git pull"
+        execute "rbenv rehash"
+      end
+      if capture("if [ -d ~/.rbenv/versions/#{ruby_version} ]; then echo 'true'; fi") == ''
+        execute "rbenv install #{ruby_version}"
+        execute "rbenv global #{ruby_version}"
+        execute "rbenv rehash"
+      end
+      execute "gem install bundler"
+      execute "rbenv rehash"
+    end
+  end
+end
+
 namespace :deploy do
 
-  #before "ruby:setup", "env:setup"
-  before "deploy",  "ruby:setup"
+  before "ruby:setup", "env:setup"
+  before "deploy", "ruby:setup"
   desc 'start appliction'
   task :start do
     on roles(:web) do
@@ -80,42 +115,4 @@ namespace :deploy do
     end
   end
 
-end
-
-namespace :ruby do
-
-  desc "install rbenv, ruby, and bundler"
-  task :setup do
-    on roles(:web) do
-      test=capture("echo 'true'")
-      if capture("if [ -d ~/.rbenv ]; then echo 'true'; fi") == ''
-        execute "git clone https://github.com/sstephenson/rbenv.git ~/.rbenv"
-      else
-        execute "cd ~/.rbenv && git pull"
-      end
-      if capture("if grep rbenv ~/.bashrc; then echo 'true'; fi") == ''
-        execute "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' >> ~/.bashrc"
-        execute "echo 'eval \"$(rbenv init -)\"' >> ~/.bashrc"
-        execute "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' >> ~/.bash_profile"
-        execute "echo 'eval \"$(rbenv init -)\"' >> ~/.bash_profile"
-      end
-      execute "echo $SHELL"
-      execute "shopt -q login_shell && echo 'Login shell' || echo 'Not login shell'"
-      execute "echo $PATH"
-      if capture("if [ -d ~/.rbenv/plugins/ruby-build ]; then echo 'true'; fi") == ''
-        execute "git clone https://github.com/sstephenson/ruby-build ~/.rbenv/plugins/ruby-build"
-        execute "rbenv rehash"
-      else
-        execute "cd ~/.rbenv/plugins/ruby-build && git pull"
-        execute "rbenv rehash"
-      end
-      if capture("if [ -d ~/.rbenv/versions/#{ruby_version} ]; then echo 'true'; fi") == ''
-        execute "rbenv install #{ruby_version}"
-        execute "rbenv global #{ruby_version}"
-        execute "rbenv rehash"
-      end
-      execute "gem install bundler"
-      execute "rbenv rehash"
-    end
-  end
 end
