@@ -1,11 +1,13 @@
 # Load DSL and Setup Up Stages
+
+require 'deploy'
+require 'capistrano'
 require 'capistrano/setup'
-
-# Includes default deployment tasks
+require 'capistrano/cli'
 require 'capistrano/deploy'
-
-#require 'capistrano/rbenv'
+require 'capistrano/rbenv'
 require 'capistrano/bundler'
+require 'github_api'
 
 # Loads custom tasks from `lib/capistrano/tasks' if you have any defined.
 Dir.glob('lib/capistrano/**/*.rb').each { |r| import r }
