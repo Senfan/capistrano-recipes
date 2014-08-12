@@ -1,25 +1,34 @@
 # config valid only for Capistrano 3.1
 lock '3.2.1'
+require 'json'
 
-#host=Capistrano::CLI.ui.ask("input the host address")
-host="10.110.125.211"
-#user=Capistrano::CLI.ui.ask("input your user name on ubuntu:")
-user="deploy2"
-#ruby_version=Capistrano::CLI.ui.ask("input ruby version you want to use:")
-ruby_version="1.9.3-p547"
-#git_repo=Capistrano::CLI.ui.ask("input the github repo address")
+file = File.read('./config/server.json')
+data = JSON.parse(file)
+
+puts data
+puts data['server']
+puts data['server'][0]
+puts data['server'][0]['host']
+
+host = data['server'][0]['host']
+user = data['server'][0]['username']
 git_repo="https://github.com/teddy-hoo/test.git"
+ruby_version="2.1.2"
+
+if("#{ruby_version}".empty?)
+  set :ruby_version, "2.1.2"
+end
 
 set :application, 'test'
-set :user, '#{user}'
+set :user, "#{user}"
 set :scm, :git
-set :repo_url, '#{git_repo}'
+set :repo_url, "#{git_repo}"
 set :deploy_to, "/home/#{user}/webapp"
 set :pty, true
 
 set :stage, :staging
 set :branch, "master"
-role :web, %w{"#{deploy2}"@"#{host}"}
+server "#{host}", roles: [:web], user: "#{user}"
 
 set :bundle_roles, :all
 set :bundle_servers, -> { release_roles(fetch(:bundle_roles)) }
@@ -35,7 +44,7 @@ set :bundle_env_variables, {}
 
 #set rbenv
 #set :rbenv_type, :user # or :system, depends on your rbenv setup
-set :rbenv_ruby, "#{ruby_version}"
+#set :rbenv_ruby, "#{fetch(:ruby_version)}"
 #set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{#fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
 #set :rbenv_map_bins, %w{rake gem bundle ruby rails}
 #set :rbenv_roles, :all # default value
@@ -94,24 +103,22 @@ namespace :github do
   desc "configure github environment"
   task :setup do
     on roles(:web) do
-      option = Capistrano::CLI.ui.ask("do you want to config github?(Y)")
-      if(option != "Y")
-        return
+      ask(:option, "do you want to config github?(Y)")
+      if("#{fetch(:option)}" == "Y")
+        ask(:email, "input email address: ")
+        file = "~/.ssh/id_rsa"
+        public_file = "#{file}.pub"
+        execute "git config --global core.editor 'vi'"
+        execute "git config --global user.email '#{fetch(:email)}'"
+        if capture("if [ -f #{file} ]; then echo 'true'; fi") == ''
+          execute "ssh-keygen -q -t rsa -C '#{fetch(:email)}' -N '' -f '#{file}' "
+        end
+        key = capture "cat #{public_file}"
+        ask(:username, "input github username: ")
+        ask(:password, "input github password: ")
+        github = Github.new( login: username, password: password )
+        github.users.keys.create( title: "capistrano generated", key: key )
       end
-      email = Capistrano::CLI.ui.ask("input email address: ")
-      file = "/home/devops/.ssh/id_rsa"
-      public_file = "#{file}.pub"
-      run "git config --global core.editor 'vi'"
-      run "git config --global user.email '#{email}'"
-      check = capture "if [ -f #{file} ]; then echo 'true'; fi"
-      if check.empty?
-        run "ssh-keygen -q -t rsa -C '#{email}' -N '' -f '#{file}'"
-      end
-      key = capture "cat #{public_file}"
-      username  = Capistrano::CLI.ui.ask("input github username: ")
-      password  = Capistrano::CLI.password_prompt("input github password: ")
-      github = Github.new( login: username, password: password )
-      github.users.keys.create( title: "capistrano generated", key: key )
     end
   end
 
@@ -120,8 +127,8 @@ end
 
 namespace :deploy do
 
-  #before "ruby:setup", "env:setup"
-  #before "deploy", "ruby:setup"
+  before "ruby:setup", "env:setup"
+  before "deploy", "ruby:setup"
   #after "deploy", "github:setup"
   desc 'start appliction'
   task :start do
