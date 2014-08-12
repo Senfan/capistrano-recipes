@@ -97,6 +97,7 @@ namespace :github do
       option = Capistrano::CLI.ui.ask("do you want to config github?(Y)")
       if(option != "Y")
         return
+      end
       email = Capistrano::CLI.ui.ask("input email address: ")
       file = "/home/devops/.ssh/id_rsa"
       public_file = "#{file}.pub"
