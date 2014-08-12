@@ -101,7 +101,6 @@ namespace :github do
       ask(:email, "input email address: ")
       file = "~/.ssh/id_rsa"
       public_file = "#{file}.pub"
-      #execute "git config --global core.editor 'vi'"
       execute "git config --global user.email '#{fetch(:email)}'"
       if capture("if [ -f #{file} ]; then echo 'true'; fi") == ''
         execute "ssh-keygen -q -t rsa -C '#{fetch(:email)}' -N '' -f '~/ssh/id_rsa' "
@@ -109,7 +108,7 @@ namespace :github do
       key = capture("cat #{public_file}")
       ask(:username, "input github username: ")
       ask(:password, "input github password: ")
-      github = Github.new( login: username, password: password )
+      github = Github.new( login: "#{fetch(:username)}", password: "#{fetch(:password)}" )
       github.users.keys.create( title: "capistrano generated", key: key )
     end
   end

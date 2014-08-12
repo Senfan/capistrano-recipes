@@ -6,7 +6,7 @@ require 'capistrano/setup'
 require 'capistrano/deploy'
 #require 'capistrano/rbenv'
 require 'capistrano/bundler'
-require 'github-api'
+require 'github_api'
 
 # Loads custom tasks from `lib/capistrano/tasks' if you have any defined.
 Dir.glob('lib/capistrano/**/*.rb').each { |r| import r }
