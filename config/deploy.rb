@@ -5,11 +5,6 @@ require 'json'
 file = File.read('./config/server.json')
 data = JSON.parse(file)
 
-puts data
-puts data['server']
-puts data['server'][0]
-puts data['server'][0]['host']
-
 host = data['server'][0]['host']
 user = data['server'][0]['username']
 git_repo="https://github.com/teddy-hoo/test.git"
@@ -103,25 +98,22 @@ namespace :github do
   desc "configure github environment"
   task :setup do
     on roles(:web) do
-      ask(:option, "do you want to config github?(Y)")
-      if("#{fetch(:option)}" == "Y")
-        ask(:email, "input email address: ")
-        file = "~/.ssh/id_rsa"
-        public_file = "#{file}.pub"
-        execute "git config --global core.editor 'vi'"
-        execute "git config --global user.email '#{fetch(:email)}'"
-        if capture("if [ -f #{file} ]; then echo 'true'; fi") == ''
-          execute "ssh-keygen -q -t rsa -C '#{fetch(:email)}' -N '' -f '#{file}' "
-        end
-        key = capture "cat #{public_file}"
-        ask(:username, "input github username: ")
-        ask(:password, "input github password: ")
-        github = Github.new( login: username, password: password )
-        github.users.keys.create( title: "capistrano generated", key: key )
+      ask(:email, "input email address: ")
+      file = "~/.ssh/id_rsa"
+      public_file = "#{file}.pub"
+      #execute "git config --global core.editor 'vi'"
+      execute "git config --global user.email '#{fetch(:email)}'"
+      if capture("if [ -f #{file} ]; then echo 'true'; fi") == ''
+        execute "ssh-keygen -q -t rsa -C '#{fetch(:email)}' -N '' -f '~/ssh/id_rsa' "
       end
+      key = capture("cat #{public_file}")
+      ask(:username, "input github username: ")
+      ask(:password, "input github password: ")
+      github = Github.new( login: username, password: password )
+      github.users.keys.create( title: "capistrano generated", key: key )
     end
   end
-
+ 
 end
 
 
