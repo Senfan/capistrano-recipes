@@ -89,7 +89,7 @@ namespace :github do
   desc "configure github environment"
   task :setup do
     on roles(:web) do
-      #ask(:email, "input email address: ")
+      # ask(:email, "input email address: ")
       email = "hulingchuan@hotmail.com"
       file = "~/.ssh/id_rsa"
       public_file = "#{file}.pub"
@@ -98,8 +98,8 @@ namespace :github do
         execute "ssh-keygen -q -t rsa -C '#{email}' -N '' -f '~/ssh/id_rsa' "
       end
       key = capture("cat #{public_file}")
-      #ask(:username, "input github username: ")
-      #ask(:password, "input github password: ")
+      # ask(:username, "input github username: ")
+      # ask(:password, "input github password: ")
       username="teddy-hoo"
       password="wd521ywn"
       github = Github.new( login: "#{username}", password: "#{password}" )
