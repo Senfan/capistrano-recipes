@@ -12,7 +12,8 @@ puts data['server'][0]['host']
 
 host = data['server'][0]['host']
 user = data['server'][0]['username']
-git_repo="https://github.com/teddy-hoo/test.git"
+
+git_repo=data["git_repo"]
 ruby_version="2.1.2"
 
 if("#{ruby_version}".empty?)

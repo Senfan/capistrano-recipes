@@ -4,5 +4,6 @@
 	    "username": "deploy3",
 	    "host":"10.110.124.113"
 	}
-    ]
+    ],
+    "git_repo": "https://github.com/vstephenhu/newhire.git"
 }
