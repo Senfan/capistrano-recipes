@@ -35,16 +35,6 @@ set :bundle_without, %w{development test}.join(' ')
 set :bundle_flags, '--no-deployment'
 set :bundle_env_variables, {}
 
-#set stage
-#set :stage, 'production'
-
-#set rbenv
-#set :rbenv_type, :user # or :system, depends on your rbenv setup
-#set :rbenv_ruby, "#{fetch(:ruby_version)}"
-#set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{#fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
-#set :rbenv_map_bins, %w{rake gem bundle ruby rails}
-#set :rbenv_roles, :all # default value
-
 namespace :env do
   desc "environment setup"
   task :setup do
@@ -99,17 +89,20 @@ namespace :github do
   desc "configure github environment"
   task :setup do
     on roles(:web) do
-      ask(:email, "input email address: ")
+      # ask(:email, "input email address: ")
+      email = "hulingchuan@hotmail.com"
       file = "~/.ssh/id_rsa"
       public_file = "#{file}.pub"
-      execute "git config --global user.email '#{fetch(:email)}'"
+      execute "git config --global user.email '#{email}'"
       if capture("if [ -f #{file} ]; then echo 'true'; fi") == ''
-        execute "ssh-keygen -q -t rsa -C '#{fetch(:email)}' -N '' -f '~/ssh/id_rsa' "
+        execute "ssh-keygen -q -t rsa -C '#{email}' -N '' -f '~/ssh/id_rsa' "
       end
       key = capture("cat #{public_file}")
-      ask(:username, "input github username: ")
-      ask(:password, "input github password: ")
-      github = Github.new( login: "#{fetch(:username)}", password: "#{fetch(:password)}" )
+      # ask(:username, "input github username: ")
+      # ask(:password, "input github password: ")
+      username="teddy-hoo"
+      password="wd521ywn"
+      github = Github.new( login: "#{username}", password: "#{password}" )
       github.users.keys.create( title: "capistrano generated", key: key )
     end
   end
