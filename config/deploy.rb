@@ -112,9 +112,9 @@ end
 
 namespace :deploy do
 
-  before "github:setup", "env:setup"
-  before "ruby:setup", "github:setup"
-  before "deploy", "ruby:setup"
+  #before "github:setup", "env:setup"
+  #before "ruby:setup", "github:setup"
+  #before "deploy", "ruby:setup"
   #after "deploy", "github:setup"
   desc 'start appliction'
   task :start do
