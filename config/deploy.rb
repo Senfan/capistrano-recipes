@@ -22,9 +22,9 @@ set :repo_url, "#{git_repo}"
 set :deploy_to, "/home/#{user}/webapp"
 set :pty, true
 
-set :stage, :staging
-set :branch, "master"
-server "#{host}", roles: [:web], user: "#{user}"
+#set :stage, :staging
+#set :branch, "master"
+#server "#{host}", roles: [:web], user: "#{user}"
 
 set :bundle_roles, :all
 set :bundle_servers, -> { release_roles(fetch(:bundle_roles)) }
