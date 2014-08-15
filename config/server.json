@@ -8,7 +8,6 @@
 			"username": "newhire",
 			"host":"10.110.178.14"
 		}
-	}
-    ],
+	},
     "git_repo":"https://github.com/vstephenhu/newhire.git"
 }
