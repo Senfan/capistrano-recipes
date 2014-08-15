@@ -1,8 +1,13 @@
 {
-    "server":[
-	{
-	    "username": "deploy3",
-	    "host":"10.110.124.113"
+    "server":{
+		"staging":{
+	    	"username": "newhire",
+	    	"host":"10.110.178.13"
+		},
+		"production":{
+			"username": "newhire",
+			"host":"10.110.178.14"
+		}
 	}
     ],
     "git_repo": "https://github.com/vstephenhu/newhire.git"
