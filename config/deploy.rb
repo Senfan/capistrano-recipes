@@ -109,9 +109,9 @@ end
 
 namespace :deploy do
 
-  before "github:setup", "env:setup"
-  before "ruby:setup", "github:setup"
-  before "deploy", "ruby:setup"
+  #before "github:setup", "env:setup"
+  #before "ruby:setup", "github:setup"
+  #before "deploy", "ruby:setup"
   #after "deploy", "github:setup"
   desc 'start appliction'
   task :start do
@@ -123,8 +123,6 @@ namespace :deploy do
   desc 'Restart application'
   task :restart do
     on roles(:web) do
-      #execute "pkill ruby"
-      #execute "ruby #{release_path}/server.rb"
     end
   end
 
