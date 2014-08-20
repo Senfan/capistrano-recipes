@@ -29,6 +29,7 @@ set :bundle_path, -> { shared_path.join('bundle') }
 set :bundle_without, %w{development test}.join(' ')
 set :bundle_flags, '--no-deployment'
 set :bundle_env_variables, {}
+set :bundle_dir, -> { shared_path.join('bundle') }
 
 namespace :env do
   desc "environment setup"
