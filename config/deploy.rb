@@ -21,16 +21,6 @@ set :repo_url, "#{git_repo}"
 set :deploy_to, "/home/#{user}/webapp"
 set :pty, true
 
-set :bundle_roles, :all
-set :bundle_servers, -> { release_roles(fetch(:bundle_roles)) }
-set :bundle_binstubs, -> { shared_path.join('bin') }
-set :bundle_gemfile, -> { release_path.join('Gemfile') }
-set :bundle_path, -> { shared_path.join('bundle') }
-set :bundle_without, %w{development test}.join(' ')
-set :bundle_flags, '--no-deployment'
-set :bundle_env_variables, {}
-set :bundle_dir, -> { shared_path.join('bundle') }
-
 namespace :env do
   desc "environment setup"
   task :setup do
@@ -107,12 +97,22 @@ namespace :github do
  
 end
 
+namespace :bundle do
+  desc 'run bundle install'
+  task :install do
+    on roles(:web) do
+      execute "cd #{release_path} && bundle install"
+    end
+  end
+end
+
 namespace :deploy do
 
   #before "github:setup", "env:setup"
   #before "ruby:setup", "github:setup"
   #before "deploy", "ruby:setup"
   #after "deploy", "github:setup"
+  after 'deploy', 'bundle:install'
   desc 'start appliction'
   task :start do
     on roles(:web) do
