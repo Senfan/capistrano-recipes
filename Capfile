@@ -4,8 +4,6 @@ require 'deploy'
 require 'capistrano'
 require 'capistrano/setup'
 require 'capistrano/deploy'
-#require 'capistrano/rbenv'
-require 'capistrano/bundler'
 require 'github_api'
 
 # Loads custom tasks from `lib/capistrano/tasks' if you have any defined.

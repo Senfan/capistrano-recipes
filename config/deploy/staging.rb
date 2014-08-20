@@ -3,4 +3,10 @@
 # Supports bulk-adding hosts to roles, the primary server in each group
 # is considered to be the first unless any hosts have the primary
 # property set.  Don't declare `role :all`, it's a meta role.
-server "10.110.178.13", roles: [:web], user: "newhire"
+
+file = File.read('./config/server.json')
+data = JSON.parse(file)
+
+host = data['server']['staging']['host']
+user = data['server']['staging']['username']
+server "#{host}", roles: [:web], user: "#{user}"
