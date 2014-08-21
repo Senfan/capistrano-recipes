@@ -2,12 +2,31 @@
 lock '3.2.1'
 require 'json'
 
+
 file = File.read('./config/server.json')
 data = JSON.parse(file)
 
-user = data['server']['staging']['username']
-
+host = data['server']['deploy']['host']
+user = data['server']['deploy']['username']
 git_repo=data["git_repo"]
+
+if host == ''
+  ask(:hostad, "input host address: ")
+end
+host = "#{fetch(:hostad)}"
+
+if user == ''
+  ask(:username, 'input username: ')
+end
+user = "#{fetch(:username)}"
+
+if git_repo == ''
+  ask(:gitrepo, 'input username: ')
+end
+git_repo = "#{fetch(:gitrepo)}"
+
+server "#{host}", roles: [:web], user: "#{user}"
+
 ruby_version="2.1.2"
 
 if("#{ruby_version}".empty?)

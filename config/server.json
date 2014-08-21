@@ -1,13 +1,9 @@
 {
     "server":{
-		"staging":{
-	    	"username": "newhire",
-	    	"host":"10.110.178.13"
-		},
-		"production":{
-			"username": "newhire",
-			"host":"10.110.178.14"
+		"deploy":{
+	    	"username": "",
+	    	"host":""
 		}
 	},
-    "git_repo":"git@github.com:/vmwarechina/newhire"
+    "git_repo":""
 }

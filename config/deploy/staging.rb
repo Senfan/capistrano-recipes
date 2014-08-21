@@ -4,9 +4,9 @@
 # is considered to be the first unless any hosts have the primary
 # property set.  Don't declare `role :all`, it's a meta role.
 
-file = File.read('./config/server.json')
-data = JSON.parse(file)
+#file = File.read('./config/server.json')
+#data = JSON.parse(file)
 
-host = data['server']['staging']['host']
-user = data['server']['staging']['username']
-server "#{host}", roles: [:web], user: "#{user}"
+#host = data['server']['staging']['host']
+#user = data['server']['staging']['username']
+#server "#{host}", roles: [:web], user: "#{user}"
