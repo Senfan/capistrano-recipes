@@ -4,7 +4,13 @@ capistrano-recipes
 Common recipes
 
 #deploy steps
-1. install openssh-server to your ubuntu server
-2. run sysset.sh
-3. change the user name and host address in config/server.json file
-4. use command "cap deploy" to deploy your project
+
+Stages:   
+	local      : for local dev env deploy  
+	testing    : for testing env deploy  
+	staging    : for staging env deploy  
+	production : for production env deploy    
+Roles:  
+	nginx   : nginx proxy server  
+	sinatra : sinatra server  
+	db      : postgres db server  

@@ -1,128 +1,59 @@
 # config valid only for Capistrano 3.1
 lock '3.2.1'
-require 'json'
 
-file = File.read('./config/server.json')
-data = JSON.parse(file)
+load "config/env_setup.rb"
+load "config/ruby_setup.rb"
+load "config/bundle_install.rb"
 
-user = data['server']['staging']['username']
+set :application, 'newhire'
+set :repo_url, 'git@github.com:/vmwarechina/newhire'
 
-git_repo=data["git_repo"]
-ruby_version="2.1.2"
+# Default branch is :master
+# ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
 
-if("#{ruby_version}".empty?)
-  set :ruby_version, "2.1.2"
-end
+# Default deploy_to directory is /var/www/my_app
+# set :deploy_to, '/var/www/my_app'
 
-set :application, 'test'
-set :user, "#{user}"
-set :scm, :git
-set :repo_url, "#{git_repo}"
-set :deploy_to, "/home/#{user}/webapp"
-set :pty, true
+# Default value for :scm is :git
+# set :scm, :git
 
-namespace :env do
-  desc "environment setup"
-  task :setup do
-    on roles(:web) do
-      pkgs = %w(git gcc make zlib1g-dev libxml2-dev libxml2 libxslt1.1 libxslt1-dev openssl libssl-dev g++ unzip sqlite3 libsqlite3-dev libpq-dev ntp libpcre3 libpcre3-dev)
-      execute "sudo apt-get -y update"
-      pkgs.each do |pkg|
-        puts %{pkg}
-        execute "sudo apt-get -y install #{pkg}"
-      end
-    end
-  end
-end
+# Default value for :format is :pretty
+# set :format, :pretty
 
-namespace :ruby do
+# Default value for :log_level is :debug
+# set :log_level, :debug
 
-  desc "install rbenv, ruby, and bundler"
-  task :setup do
-    on roles(:web) do
-      if capture("if [ -d ~/.rbenv ]; then echo 'true'; fi") == ''
-        execute "git clone https://github.com/sstephenson/rbenv.git ~/.rbenv"
-      else
-        execute "cd ~/.rbenv && git pull"
-      end
-      if capture("if grep rbenv ~/.bashrc; then echo 'true'; fi") == ''
-        execute "echo 'eval \"$(rbenv init -)\"' | cat - ~/.bashrc > tmp"
-        execute "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' | cat - tmp > tmp1"
-        execute "mv ~/tmp1 ~/.bashrc"
-        execute "rm ~/tmp"
-        execute ". ~/.bashrc"
-      end
-      if capture("if [ -d ~/.rbenv/plugins/ruby-build ]; then echo 'true'; fi") == ''
-        execute "git clone https://github.com/sstephenson/ruby-build ~/.rbenv/plugins/ruby-build"
-        execute "rbenv rehash"
-      else
-        execute "cd ~/.rbenv/plugins/ruby-build && git pull"
-        execute "rbenv rehash"
-      end
-      if capture("if [ -d ~/.rbenv/versions/#{ruby_version} ]; then echo 'true'; fi") == ''
-        execute "rbenv install #{ruby_version}"
-        execute "rbenv global #{ruby_version}"
-        execute "rbenv rehash"
-      end
-      execute "gem install bundler"
-      execute "rbenv rehash"
-    end
-  end
-end
+# Default value for :pty is false
+# set :pty, true
 
-namespace :github do
+# Default value for :linked_files is []
+# set :linked_files, %w{config/database.yml}
 
-  desc "configure github environment"
-  task :setup do
-    on roles(:web) do
-      ask(:email, "input email address: ")
-      execute "printf 'Host github.com \\n\\t User git" +
-              " \\n\\t Hostname ssh.github.com" +
-              " \\n\\t PreferredAuthentications publickey" +
-              " \\n\\t IdentityFile ~/.ssh/id_rsa" +
-              " \\n\\t Port 443\\n' > ~/.ssh/config"
-      file = "~/.ssh/id_rsa"
-      public_file = "#{file}.pub"
-      execute "git config --global user.email '#{fetch(:email)}'"
-      if capture("if [ -f #{file} ]; then echo 'true'; fi") == ''
-        execute "ssh-keygen -q -t rsa -C '#{fetch(:email)}' -N '' -f '~/ssh/id_rsa' "
-      end
-      key = capture("cat #{public_file}")
-      ask(:username, "input github username: ")
-      ask(:password, "input github password: ")
-      github = Github.new( login: "#{fetch(:username)}", password: "#{fetch(:password)}" )
-      github.users.keys.create( title: "capistrano generated", key: key )
-    end
-  end
- 
-end
+# Default value for linked_dirs is []
+# set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
 
-namespace :bundle do
-  desc 'run bundle install'
-  task :install do
-    on roles(:web) do
-      execute "cd #{release_path} && bundle install"
+# Default value for default_env is {}
+# set :default_env, { path: "/opt/ruby/bin:$PATH" }
+
+# Default value for keep_releases is 5
+# set :keep_releases, 5
+
+#for test, will be removed later
+namespace :test do
+  task :test do
+    on roles(:nginx) do
+      execute "echo 'for test'"
     end
   end
 end
 
 namespace :deploy do
 
-  #before "github:setup", "env:setup"
-  #before "ruby:setup", "github:setup"
-  #before "deploy", "ruby:setup"
-  #after "deploy", "github:setup"
-  after 'deploy', 'bundle:install'
-  desc 'start appliction'
-  task :start do
-    on roles(:web) do
-      execute "$ruby #{release_path}/server.rb"
-    end
-  end
-
   desc 'Restart application'
   task :restart do
-    on roles(:web) do
+    on roles(:app), in: :sequence, wait: 5 do
+      # Your restart mechanism here, for example:
+      # execute :touch, release_path.join('tmp/restart.txt')
     end
   end
 

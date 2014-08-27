@@ -6,13 +6,14 @@ echo -n "Enter the user name:"
 read username
 
 #add ssh-key
+ssh -t $username@$host "mkdir ~/.ssh"
 scp ~/.ssh/authorized_keys $username@$host:/home/$username/.ssh/
 scp ~/.ssh/id_rsa.pub $username@$host:/home/$username/.ssh/
 scp ~/.ssh/id_rsa $username@$host:/home/$username/.ssh/
 
 #enable ssh-key
-ssh -t $username@$host "mkdir ~/.ssh"
 ssh -t $username@$host "eval $(ssh-agent)"
+ssh -t $username@$host "ssh-add"
 
 #add user previlege
 ssh -t $username@$host "sudo cat /etc/sudoers > ~/sudoers_tmp"
