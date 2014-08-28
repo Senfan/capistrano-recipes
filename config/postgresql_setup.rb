@@ -1,5 +1,14 @@
-#role for db
+#role for:
+# => db
 #
+require_relative 'loadinfo'
+
+dbuser          = DbInfo['username']
+postgresql_pwd  = DbInfo['password']
+webappdb        = DbInfo['dbname']
+subnetwork      = DbInfo['subnetwork']
+
+
 namespace :postgresql do
    desc "install postgresql"
    task :setup do
@@ -30,8 +39,8 @@ namespace :postgresql do
                  "host    all             all          ::1/128          md5' > /etc/postgresql/9.3/main/pg_hba.conf \" "
          execute "sudo /etc/init.d/postgresql restart"
          execute "sudo -u postgres createuser --superuser #{dbuser}"
-         execute "sudo -u postgres createdb -O dbuser #{webappdb}"
-         execute "psql -U dbuser -d webappdb -h 127.0.0.1 -p 5432 -c \"alter user dbuser with password '#{postgresql_pwd}';\" "
+         execute "sudo -u postgres createdb -O #{dbuser} #{webappdb}"
+         execute "psql -U #{dbuser} -d #{webappdb} -h 127.0.0.1 -p 5432 -c \"alter user #{dbuser} with password '#{postgresql_pwd}';\" "
          execute "sudo /etc/init.d/postgresql restart"
       end
    end
