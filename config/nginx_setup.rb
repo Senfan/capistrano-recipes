@@ -1,10 +1,17 @@
-#for role web
-#
+#for role:
+# => nginx
+
+require_relative 'loadinfo'
+
+sinatraweb1 = Servers['servers']['staging']['nginx'][0]['ip']
+sinatraweb2 = Servers['servers']['staging']['nginx'][1]['ip']
+
 namespace :nginx do
    desc "install nginx"
    task :setup do
-      on roles(:web) do
+      on roles(:nginx) do
          execute "sudo apt-get -y install nginx"
+         execute "sudo /etc/init.d/nginx stop"
          execute "sudo bash -c \"echo -e 'user www-data; \\n " +
                  "worker_processes 4; \\n pid /run/nginx.pid;\\n " +
                  "events {\\n worker_connections 768;\\n  }\\n " +
@@ -19,7 +26,7 @@ namespace :nginx do
                  "error_log /var/log/nginx/error.log;\\n  " +
                  "gzip on;\\n   gzip_disable 'msie6';\\n " +
                  "}\\n '  > /etc/nginx/nginx.conf \"  "
-         execute "sudo /etc/init.d/nginx restart"
+         execute "sudo /etc/init.d/nginx start"
      end
    end
 end
