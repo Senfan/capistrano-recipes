@@ -1,9 +1,37 @@
 {
-    "server":{
-		"deploy":{
-	    	"username": "",
-	    	"host":""
-		}
-	},
-    "git_repo":"git@github.com/vmwarechian/newhire"
+    "servers": {
+        "staging": {
+            "nginx": [{
+                "server_name": "",
+                "ip": ""
+            }, {
+                "server_name": "",
+                "ip": ""
+            }],
+            "sinatra": [],
+            "db": []
+        },
+        "testing": {
+            "nginx": [{
+                "server_name": "",
+                "ip": ""
+            }, {
+                "server_name": "",
+                "ip": ""
+            }],
+            "sinatra": [],
+            "db": []
+        },
+        "production": {
+            "nginx": [{
+                "server_name": "",
+                "ip": ""
+            }, {
+                "server_name": "",
+                "ip": ""
+            }],
+            "sinatra": [],
+            "db": []
+        }
+    }
 }
