@@ -23,7 +23,11 @@ namespace :postgresql do
                  "lc_time = \'en_US.UTF-8\' \\n "+
                  "default_text_search_config = \'pg_catalog.english\' \\n \"   > ~/postgresql.conf  "
          execute "sudo bash -c  \" cat ~/postgresql.conf > /etc/postgresql/9.3/main/postgresql.conf \" "
-         execute "sudo bash -c \" echo -e 'local   all             postgres                                peer \\n local   all             all                                     peer\\n host    all             all             127.0.0.1/32            trust\\n   host all  all #{subnetwork}  trust  \\n host    all             all             ::1/128                 md5' > /etc/postgresql/9.3/main/pg_hba.conf \" "
+         execute "sudo bash -c \" echo -e 'local   all postgres  peer \\n " +
+                 "local   all             all                          peer   \\n " +
+                 "host    all             all          127.0.0.1/32    trust  \\n " +
+                 "host    all             all          #{subnetwork}   trust  \\n " + 
+                 "host    all             all          ::1/128          md5' > /etc/postgresql/9.3/main/pg_hba.conf \" "
          execute "sudo /etc/init.d/postgresql restart"
          execute "sudo -u postgres createuser --superuser #{dbuser}"
          execute "sudo -u postgres createdb -O dbuser #{webappdb}"
