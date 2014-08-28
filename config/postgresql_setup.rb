@@ -10,8 +10,8 @@ namespace :postgresql do
          execute "sudo bash -c  \" cat ~/postgresql.conf > /etc/postgresql/9.3/main/postgresql.conf \" "
          execute "sudo bash -c \" echo -e 'local   all             postgres                                peer \\n local   all             all                                     peer\\n host    all             all             127.0.0.1/32            trust\\n   host all  all #{subnetwork}  trust  \\n host    all             all             ::1/128                 md5' > /etc/postgresql/9.3/main/pg_hba.conf \" "
          execute "sudo /etc/init.d/postgresql restart"
-         execute "sudo -u postgres createuser --superuser dbuser"
-         execute "sudo -u postgres createdb -O dbuser webappdb"
+         execute "sudo -u postgres createuser --superuser #{dbuser}"
+         execute "sudo -u postgres createdb -O dbuser #{webappdb}"
          execute "psql -U dbuser -d webappdb -h 127.0.0.1 -p 5432 -c \"alter user dbuser with password '#{postgresql_pwd}';\" "
          execute "sudo /etc/init.d/postgresql restart"
       end
