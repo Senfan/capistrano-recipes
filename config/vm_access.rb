@@ -7,8 +7,9 @@ class VmAccess
   @server_list
   @env_list
   @threads
-  def initialize(host,user,psd)
-      @vm_source   = 'ubuntu14.04_template'
+  def initialize(host,user,psd,datacenter,vm_template_source)
+      @data_center = datacenter
+      @vm_source   = vm_template_source
       @server_list = ['nginx','sinatra','db']
       @env_list    = ['staging','testing','production']
       @threads     = []
@@ -18,6 +19,21 @@ class VmAccess
   def connect_vcenter(host,user,psd)
       @vim = RbVmomi::VIM.connect  host: host, user: user, password: psd, insecure: true 
   end #connect_vcenter
+
+  def get_biggest_datastore
+      dc     = @vim.serviceInstance.find_datacenter(@data_center)
+      ds     = dc.datastore[0]
+      fs     = dc.datastore[0].info.freeSpace  #free space of the first storage.
+      fs_tmp = nil
+      dc.datastore.map { | store |
+         fs_tmp = store.info.freeSpace
+         if fs_tmp > fs
+            fs = fs_tmp
+            ds = store
+         end
+      }
+      return ds
+  end # get_biggest_datastore
 
   def remove_vms(servers_json)
       puts 'Start to remove vms...'
@@ -48,7 +64,7 @@ class VmAccess
            @threads << Thread.new do
             servers_json['servers'][env][server].map { | entity |
              vm           = @vim.serviceInstance.find_datacenter.find_vm(@vm_source) or abort ("Source VM '" + @vm_source + "' Not Found!")         
-             relocateSpec = RbVmomi::VIM.VirtualMachineRelocateSpec
+             relocateSpec = RbVmomi::VIM.VirtualMachineRelocateSpec(:datastore => get_biggest_datastore() )
              spec         = RbVmomi::VIM.VirtualMachineCloneSpec(:location => relocateSpec, :powerOn => true, :template => false)
              task         = vm.CloneVM_Task(:folder => vm.parent, :name => entity['server_name'], :spec => spec)
              task.wait_for_completion  
