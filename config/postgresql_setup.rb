@@ -4,7 +4,7 @@
 require_relative 'loadinfo'
 
 dbuser          = DbInfo['username']
-postgresql_pwd  = DbInfo['password']
+postgresql_pwd  = DbInfo['password'].gsub('$','\$')
 webappdb        = DbInfo['dbname']
 subnetwork      = DbInfo['subnetwork']
 
@@ -35,12 +35,12 @@ namespace :postgresql do
          execute "sudo bash -c \" echo -e 'local   all postgres  peer \\n " +
                  "local   all             all                          peer   \\n " +
                  "host    all             all          127.0.0.1/32    trust  \\n " +
-                 "host    all             all          #{subnetwork}   trust  \\n " + 
+                 "host    all             all          #{subnetwork}   md5  \\n " + 
                  "host    all             all          ::1/128          md5' > /etc/postgresql/9.3/main/pg_hba.conf \" "
          execute "sudo /etc/init.d/postgresql restart"
          execute "sudo -u postgres createuser --superuser #{dbuser}"
          execute "sudo -u postgres createdb -O #{dbuser} #{webappdb}"
-         execute "psql -U #{dbuser} -d #{webappdb} -h 127.0.0.1 -p 5432 -c \"alter user #{dbuser} with password '#{postgresql_pwd}';\" "
+         execute "sudo -u postgres  psql -h 127.0.0.1 -p 5432 -c \"alter user #{dbuser}  password '#{postgresql_pwd}';\" "
          execute "sudo /etc/init.d/postgresql restart"
       end
    end
