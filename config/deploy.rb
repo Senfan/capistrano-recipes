@@ -6,9 +6,58 @@ load "config/env_setup.rb"
 load "config/ruby_setup.rb"
 load "config/bundle_install.rb"
 
+set :user, "devops"
 set :application, 'newhire'
 set :repo_url, 'git@github.com:/vmwarechina/newhire'
 set :scm, :git
+
+namespace :staging do
+  desc "for staging env deploy"
+
+  before "ruby:setup", "env:setup"
+  before "postgresql:setup", "ruby:setup"
+  before "nginx:setup", "postgresql:setup"
+  before "deploy", "nginx:setup"
+  task :deploy do
+    # config db
+    # start sinatra 
+    on roles(:sinatra) do
+      execute "cd #{deploy_to} && rackup"
+    end
+  end
+end
+
+namespace :production do
+  desc "for production env deploy"
+
+  # before "ruby:setup", "env:setup"
+  # before "postgresql:setup", "ruby:setup"
+  # before "nginx:setup", "postgresql:setup"
+  # before "deploy", "nginx:setup"
+  task :deploy do
+    # config db
+    # start sinatra 
+    on roles(:sinatra) do
+      execute "cd #{deploy_to} && rackup"
+    end
+  end
+end
+
+namespace :production do
+  desc "for production env deploy"
+
+  # before "ruby:setup", "env:setup"
+  # before "postgresql:setup", "ruby:setup"
+  # before "nginx:setup", "postgresql:setup"
+  # before "deploy", "nginx:setup"
+  task :deploy do
+    # config db
+    # start sinatra 
+    on roles(:sinatra) do
+      execute "cd #{deploy_to} && rackup"
+    end
+  end
+end
 
 namespace :deploy do
 
