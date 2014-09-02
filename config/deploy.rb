@@ -13,62 +13,69 @@ set :application, 'newhire'
 set :repo_url, 'git@github.com:/vmwarechina/newhire'
 set :scm, :git
 
-namespace :staging do
-  desc "for staging env deploy"
+# namespace :staging do
+#   desc "for staging env deploy"
+
+#   before "ruby:setup", "env:setup"
+#   before "postgresql:setup", "ruby:setup"
+#   before "nginx:setup", "postgresql:setup"
+#   before "bundle:install", "nginx:setup"
+#   before "deploy", "bundle:install"
+#   task :deploy do
+#     # config db
+#     # start sinatra 
+#     on roles(:sinatra) do
+#       execute "cd #{deploy_to} && rackup"
+#     end
+#   end
+# end
+
+# namespace :testing do
+#   desc "for production env deploy"
+
+#   before "ruby:update", "env:update"
+#   before "postgresql:update", "ruby:update"
+#   before "nginx:update", "postgresql:update"
+#   before "deploy", "nginx:update"
+#   task :deploy do
+#     # config db
+#     # start sinatra 
+#     on roles(:sinatra) do
+#       execute "cd #{deploy_to} && rackup"
+#     end
+#   end
+# end
+
+# namespace :production do
+#   desc "for production env deploy"
+
+#   before "ruby:update", "env:update"
+#   before "postgresql:update", "ruby:update"
+#   before "nginx:update", "postgresql:update"
+#   before "deploy", "nginx:update"
+#   task :deploy do
+#     # config db
+#     # start sinatra 
+#     on roles(:sinatra) do
+#       execute "cd #{deploy_to} && rackup"
+#     end
+#   end
+# end
+
+namespace :deploy do
 
   before "ruby:setup", "env:setup"
   before "postgresql:setup", "ruby:setup"
   before "nginx:setup", "postgresql:setup"
   before "bundle:install", "nginx:setup"
   before "deploy", "bundle:install"
-  task :deploy do
-    # config db
-    # start sinatra 
-    on roles(:sinatra) do
-      execute "cd #{deploy_to} && rackup"
-    end
-  end
-end
-
-namespace :testing do
-  desc "for production env deploy"
-
-  before "ruby:update", "env:update"
-  before "postgresql:update", "ruby:update"
-  before "nginx:update", "postgresql:update"
-  before "deploy", "nginx:update"
-  task :deploy do
-    # config db
-    # start sinatra 
-    on roles(:sinatra) do
-      execute "cd #{deploy_to} && rackup"
-    end
-  end
-end
-
-namespace :production do
-  desc "for production env deploy"
-
-  before "ruby:update", "env:update"
-  before "postgresql:update", "ruby:update"
-  before "nginx:update", "postgresql:update"
-  before "deploy", "nginx:update"
-  task :deploy do
-    # config db
-    # start sinatra 
-    on roles(:sinatra) do
-      execute "cd #{deploy_to} && rackup"
-    end
-  end
-end
-
-namespace :deploy do
 
   desc 'Restart application'
   task :restart do
-    on roles(:app), in: :sequence, wait: 5 do
-      # Your restart mechanism here, for example:
-      # execute :touch, release_path.join('tmp/restart.txt')
+    on roles(:sinatra), in: :sequence, wait: 5 do
+      execute "cd #{deploy_to}; rake config:create; " +
+              "rake db:migrate; rake db:seed"
+      execute "cd #{deploy_to} && rackup"
     end
   end
 
