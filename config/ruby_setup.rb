@@ -30,7 +30,6 @@ namespace :ruby do
         execute "rbenv global #{ruby_version}"
         execute "rbenv rehash"
       end
-      execute "gem uninstall nokogiri"
       execute "gem install bundler"
       execute "rbenv rehash"
     end
