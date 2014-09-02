@@ -98,7 +98,7 @@ class VmAccess
          @server_list.each do | server |
             servers_json['servers'][env][server].map { | entity |
               vm           = @vim.serviceInstance.find_datacenter.find_vm(entity['server_name']) or abort ("VM '" + entity['server_name'] + "' Not Found!")
-              entity['ip'] = vm.guest_ip()   
+              entity['ip'] = vm.guest_ip().to_s   
               puts  "'" + entity['server_name'].to_s + "' IP is " + vm.guest_ip().to_s
             }
          end
