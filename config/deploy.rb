@@ -27,13 +27,13 @@ namespace :staging do
   end
 end
 
-namespace :production do
+namespace :testing do
   desc "for production env deploy"
 
-  # before "ruby:setup", "env:setup"
-  # before "postgresql:setup", "ruby:setup"
-  # before "nginx:setup", "postgresql:setup"
-  # before "deploy", "nginx:setup"
+  before "ruby:update", "env:update"
+  before "postgresql:update", "ruby:update"
+  before "nginx:update", "postgresql:update"
+  before "deploy", "nginx:update"
   task :deploy do
     # config db
     # start sinatra 
@@ -46,10 +46,10 @@ end
 namespace :production do
   desc "for production env deploy"
 
-  # before "ruby:setup", "env:setup"
-  # before "postgresql:setup", "ruby:setup"
-  # before "nginx:setup", "postgresql:setup"
-  # before "deploy", "nginx:setup"
+  before "ruby:update", "env:update"
+  before "postgresql:update", "ruby:update"
+  before "nginx:update", "postgresql:update"
+  before "deploy", "nginx:update"
   task :deploy do
     # config db
     # start sinatra 
