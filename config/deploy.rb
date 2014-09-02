@@ -19,7 +19,8 @@ namespace :staging do
   before "ruby:setup", "env:setup"
   before "postgresql:setup", "ruby:setup"
   before "nginx:setup", "postgresql:setup"
-  before "deploy", "nginx:setup"
+  before "bundle:install", "nginx:setup"
+  before "deploy", "bundle:install"
   task :deploy do
     # config db
     # start sinatra 

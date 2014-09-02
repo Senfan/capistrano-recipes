@@ -2,14 +2,21 @@
     "servers": {
         "staging": {
             "nginx": [{
-                "server_name": "",
-                "ip": ""
-            }, {
-                "server_name": "",
+                "server_name": "nginx-server",
                 "ip": ""
             }],
-            "sinatra": [],
-            "db": []
+            "sinatra": [{
+                "server_name": "sinatra-node-1",
+                "ip": ""
+                },
+                {
+                    "server_name": "sinatra-node-2",
+                    "ip": ""
+                    }],
+            "db": [{
+                "server_name": "db-node",
+                "ip": ""
+                }]
         },
         "testing": {
             "nginx": [{
