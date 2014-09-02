@@ -7,12 +7,13 @@ class VmAccess
   @server_list
   @env_list
   @threads
-  def initialize(host,user,psd,datacenter,vm_template_source)
-      @data_center = datacenter
-      @vm_source   = vm_template_source
-      @server_list = ['nginx','sinatra','db']
-      @env_list    = ['staging','testing','production']
-      @threads     = []
+  def initialize(host,user,psd,datacenter,cluster,vm_template_source)
+      @data_center  = datacenter
+      @cluster_name = cluster
+      @vm_source    = vm_template_source
+      @server_list  = ['nginx','sinatra','db']
+      @env_list     = ['staging','testing','production']
+      @threads      = []
       connect_vcenter(host,user,psd)
   end #initialize
   
@@ -65,18 +66,31 @@ class VmAccess
             servers_json['servers'][env][server].map { | entity |
              vm           = @vim.serviceInstance.find_datacenter.find_vm(@vm_source) or abort ("Source VM '" + @vm_source + "' Not Found!")         
              relocateSpec = RbVmomi::VIM.VirtualMachineRelocateSpec(:datastore => get_biggest_datastore() )
-             spec         = RbVmomi::VIM.VirtualMachineCloneSpec(:location => relocateSpec, :powerOn => true, :template => false)
+             spec         = RbVmomi::VIM.VirtualMachineCloneSpec(:location => relocateSpec, :powerOn => false, :template => true)
              task         = vm.CloneVM_Task(:folder => vm.parent, :name => entity['server_name'], :spec => spec)
              task.wait_for_completion  
-             puts "'" + entity['server_name'].to_s + "' has been created!"
+             puts "Template '" + entity['server_name'].to_s + "' has been created!"
             }
             sleep 1
            end #thread
          end
       end
       
-      @threads.each { |t| t.join }      
+      @threads.each { |t| t.join }
 
+      #Convert template to vm      
+      puts 'Start to convert template to vm...'
+      @env_list.each do | env |
+           @server_list.each do | server |
+              servers_json['servers'][env][server].map { | entity |
+               vm_new = @vim.serviceInstance.find_datacenter.find_vm( entity['server_name']) or  abort ("Template '" + entity['serr_name'] + "' Not Found!")
+               vm_new.MarkAsVirtualMachine(:pool => @vim.serviceInstance.find_datacenter(@data_center).find_compute_resource([]).find(@cluster_name, RbVmomi::VIM::ClusterComputeResource).resourcePool)
+               vm_new.PowerOnVM_Task.wait_for_completion
+               puts "Convert template '" + entity['server_name'] + "' to vm successfully,and power it on"
+              }
+           end
+      end
+ 
       #Get IP address for each vm 
       puts 'Start to get IP address for each vms...'
       sleep 30
@@ -84,7 +98,7 @@ class VmAccess
          @server_list.each do | server |
             servers_json['servers'][env][server].map { | entity |
               vm           = @vim.serviceInstance.find_datacenter.find_vm(entity['server_name']) or abort ("VM '" + entity['server_name'] + "' Not Found!")
-              entity['ip'] = vm.guest_ip()   
+              entity['ip'] = vm.guest_ip().to_s   
               puts  "'" + entity['server_name'].to_s + "' IP is " + vm.guest_ip().to_s
             }
          end
