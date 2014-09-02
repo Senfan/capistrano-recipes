@@ -5,6 +5,8 @@ require 'json'
 load "config/env_setup.rb"
 load "config/ruby_setup.rb"
 load "config/bundle_install.rb"
+load "config/nginx_setup.rb"
+load "config/postgresql_setup.rb"
 
 set :user, "devops"
 set :application, 'newhire'
