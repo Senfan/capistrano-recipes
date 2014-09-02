@@ -1,5 +1,5 @@
 require 'json'
-require './vm_access'
+require_relative './vm_access'
 #read server list from server.json
 #json structure refer to server.json
 server_info = File.read('./config/server.json')
