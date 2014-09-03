@@ -3,8 +3,8 @@
 
 require_relative 'loadinfo'
 
-sinatraweb1 = Servers['servers']['staging']['nginx'][0]['ip']
-sinatraweb2 = Servers['servers']['staging']['nginx'][1]['ip']
+sinatraweb1 = Servers['servers']['staging']['sinatra'][0]['ip']
+sinatraweb2 = Servers['servers']['staging']['sinatra'][1]['ip']
 
 namespace :nginx do
    desc "install nginx"

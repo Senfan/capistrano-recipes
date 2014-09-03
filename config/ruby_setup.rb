@@ -1,6 +1,8 @@
 #for role:
 # => :sinatra
 
+ruby_version = "2.1.2"
+
 namespace :ruby do
 
   desc "install rbenv, ruby, and bundler"

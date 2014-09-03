@@ -7,6 +7,7 @@ load "config/ruby_setup.rb"
 load "config/bundle_install.rb"
 load "config/nginx_setup.rb"
 load "config/postgresql_setup.rb"
+load "config/github_setup.rb"
 
 set :user, "devops"
 set :application, 'newhire'
@@ -64,18 +65,22 @@ set :scm, :git
 
 namespace :deploy do
 
-  before "ruby:setup", "env:setup"
   before "postgresql:setup", "ruby:setup"
   before "nginx:setup", "postgresql:setup"
-  before "bundle:install", "nginx:setup"
-  before "deploy", "bundle:install"
+  before "github:setup", "nginx:setup"
+  before "deploy", "github:setup"
 
+
+  before :restart, "bundle:install"
   desc 'Restart application'
   task :restart do
     on roles(:sinatra), in: :sequence, wait: 5 do
-      execute "cd #{deploy_to}; rake config:create; " +
-              "rake db:migrate; rake db:seed"
-      execute "cd #{deploy_to} && rackup"
+      within release_path do
+        execute :rake, 'config:create'
+        execute :rake, 'db:migrate'
+        execute :rake, 'db:seed'
+        execute "rackup &"
+      end
     end
   end
 
@@ -83,10 +88,9 @@ namespace :deploy do
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
-      # Here we can do anything such as:
-      # within release_path do
-      #   execute :rake, 'cache:clear'
-      # end
+      within release_path do
+        execute :rake, 'cache:clear'
+      end
     end
   end
 
