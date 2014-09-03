@@ -1,0 +1,6 @@
+{
+    "username"   : "newhire",
+    "password"   : "ca$hc0w",
+    "dbname"     : "newhiredb",
+    "subnetwork" : "10.110.178.0/24"
+}
