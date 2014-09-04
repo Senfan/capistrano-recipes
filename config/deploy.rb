@@ -76,6 +76,9 @@ namespace :deploy do
   task :restart do
     on roles(:sinatra), in: :sequence, wait: 5 do
       within release_path do
+        execute "sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
+        execute "sed -i '8s/.*/  port: 389/' config/config.yml"
+        execute "sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
         execute :rake, 'config:create'
         execute :rake, 'db:migrate'
         execute :rake, 'db:seed'
