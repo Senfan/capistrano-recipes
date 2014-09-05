@@ -11,7 +11,7 @@ load "config/github_setup.rb"
 
 set :user, "devops"
 set :application, 'newhire'
-set :repo_url, 'git@github.com:/vmwarechina/newhire'
+set :repo_url, 'git@github.com:/teddy-hoo/newhire-1'
 set :scm, :git
 
 # namespace :staging do
