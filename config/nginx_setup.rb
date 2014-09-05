@@ -21,8 +21,7 @@ namespace :nginx do
                  "location ~ .*\\.(gif|jpg|jpeg|png|bmp|swf|js|html|htm|css)\$ { \\n" +
                  "root  /home/devops/webapp/current/; \\n }\\n" +
                  "server_name  webservers;\\n location / {\\n " +
-                 "proxy_pass  http://#{sinatraweb1}:9292/;\\n " +
-                 "proxy_pass  http://#{sinatraweb2}:9292/;\\n " +
+                 "proxy_pass  http://webservers/;\\n " +
                  "}\\n }\\n sendfile on;\\n tcp_nopush on;\\n tcp_nodelay on;\\n" +
                  "keepalive_timeout 65;\\n types_hash_max_size 2048;\\n " +
                  "include /etc/nginx/mime.types;\\n default_type application/octet-stream;\\n " +
