@@ -79,9 +79,9 @@ namespace :deploy do
         execute :rake, 'config:create'
         execute :rake, 'db:migrate'
         execute :rake, 'db:seed'
-        execute "sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
-        execute "sed -i '8s/.*/  port: 389/' config/config.yml"
-        execute "sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
+        execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
+        execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
+        execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
         execute "rackup &"
       end
     end
