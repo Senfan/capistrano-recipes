@@ -14,74 +14,32 @@ set :application, 'newhire'
 set :repo_url, 'git@github.com:/teddy-hoo/newhire-1'
 set :scm, :git
 
-# namespace :staging do
-#   desc "for staging env deploy"
-
-#   before "ruby:setup", "env:setup"
-#   before "postgresql:setup", "ruby:setup"
-#   before "nginx:setup", "postgresql:setup"
-#   before "bundle:install", "nginx:setup"
-#   before "deploy", "bundle:install"
-#   task :deploy do
-#     # config db
-#     # start sinatra 
-#     on roles(:sinatra) do
-#       execute "cd #{deploy_to} && rackup"
-#     end
-#   end
-# end
-
-# namespace :testing do
-#   desc "for production env deploy"
-
-#   before "ruby:update", "env:update"
-#   before "postgresql:update", "ruby:update"
-#   before "nginx:update", "postgresql:update"
-#   before "deploy", "nginx:update"
-#   task :deploy do
-#     # config db
-#     # start sinatra 
-#     on roles(:sinatra) do
-#       execute "cd #{deploy_to} && rackup"
-#     end
-#   end
-# end
-
-# namespace :production do
-#   desc "for production env deploy"
-
-#   before "ruby:update", "env:update"
-#   before "postgresql:update", "ruby:update"
-#   before "nginx:update", "postgresql:update"
-#   before "deploy", "nginx:update"
-#   task :deploy do
-#     # config db
-#     # start sinatra 
-#     on roles(:sinatra) do
-#       execute "cd #{deploy_to} && rackup"
-#     end
-#   end
-# end
-
 namespace :deploy do
 
   before "postgresql:setup", "ruby:setup"
   before "nginx:setup", "postgresql:setup"
   before "deploy", "nginx:setup"
 
+  task :dbsetup do
+    on roles(:sinatra) do
+      execute :rake, 'config:create'
+      execute :rake, 'db:migrate'
+      execute :rake, 'db:seed'
+      execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
+      execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
+      execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
+    end
+  end
 
-  before :restart, "bundle:install"
+  before :dbsetup, "bundle:install"
+  before :restart, :dbsetup
+
   desc 'Restart application'
   task :restart do
     on roles(:sinatra), in: :sequence, wait: 5 do
       within release_path do
-        execute :rake, 'config:create'
-        execute :rake, 'db:migrate'
-        execute :rake, 'db:seed'
-        execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
-        execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
-        execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
         execute "cd #{release_path} && rackup &"
+        execute "echo 'done'"
       end
     end
   end
