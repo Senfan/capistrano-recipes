@@ -16,8 +16,8 @@ namespace :ruby do
       if capture("if grep rbenv ~/.bashrc; then echo 'true'; fi") == ''
         execute "echo 'eval \"$(rbenv init -)\"' | cat - ~/.bashrc > tmp"
         execute "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' | cat - tmp > tmp1"
-        execute "mv ~/tmp1 ~/.bashrc"
-        execute "rm ~/tmp"
+        execute "mv -f ~/tmp1 ~/.bashrc"
+        execute "rm -f ~/tmp"
         execute ". ~/.bashrc"
       end
       if capture("if [ -d ~/.rbenv/plugins/ruby-build ]; then echo 'true'; fi") == ''
