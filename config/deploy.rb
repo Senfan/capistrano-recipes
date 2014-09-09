@@ -67,8 +67,7 @@ namespace :deploy do
 
   before "postgresql:setup", "ruby:setup"
   before "nginx:setup", "postgresql:setup"
-  before "github:setup", "nginx:setup"
-  before "deploy", "github:setup"
+  before "deploy", "nginx:setup"
 
 
   before :restart, "bundle:install"
