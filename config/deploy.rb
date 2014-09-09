@@ -22,12 +22,14 @@ namespace :deploy do
 
   task :dbsetup do
     on roles(:sinatra) do
-      execute :rake, 'config:create'
-      execute :rake, 'db:migrate'
-      execute :rake, 'db:seed'
-      execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
-      execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
-      execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
+      within release_path do
+        execute :rake, 'config:create'
+        execute :rake, 'db:migrate'
+        execute :rake, 'db:seed'
+        execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
+        execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
+        execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
+      end
     end
   end
 
@@ -37,10 +39,8 @@ namespace :deploy do
   desc 'Restart application'
   task :restart do
     on roles(:sinatra), in: :sequence, wait: 5 do
-      within release_path do
         execute "cd #{release_path} && rackup &"
-        execute "echo 'done'"
-      end
+        execute "echo 'done'"      
     end
   end
 
