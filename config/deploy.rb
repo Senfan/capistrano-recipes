@@ -13,7 +13,7 @@ set :user, "devops"
 set :application, 'newhire'
 set :repo_url, 'git@github.com:/teddy-hoo/newhire-1'
 set :scm, :git
-set :pty, true
+set :pty, false
 
 namespace :deploy do
 
@@ -40,7 +40,7 @@ namespace :deploy do
   desc 'Restart application'
   task :restart do
     on roles(:sinatra), in: :sequence, wait: 5 do
-        execute "cd #{release_path} && rackup &"
+        execute "cd #{release_path} && nohup rackup -D"
         execute "echo 'done'"      
     end
   end
