@@ -2,15 +2,14 @@
 # => db
 #
 
-dbuser          = DbInfo['username']
-postgresql_pwd  = DbInfo['password'].gsub('$','\$')
-webappdb        = DbInfo['dbname']
-subnetwork      = DbInfo['subnetwork']
-
-
 namespace :postgresql do
     desc "install postgresql"
     task :setup do
+        dbuser          = DbInfo['username']
+        postgresql_pwd  = DbInfo['password'].gsub('$','\$')
+        webappdb        = DbInfo['dbname']
+        subnetwork      = DbInfo['subnetwork']
+
         on roles(:db) do
             if "#{deploy_to}".include? "staging"
                 execute "sudo apt-get -y install postgresql"
