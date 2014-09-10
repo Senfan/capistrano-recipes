@@ -1,4 +1,4 @@
-require_relative '../loadinfo'
+require_relative '../loadinfo/loadinfo_staging'
 
 user          = 'devops'
 nginx_hosts   = Servers["servers"]["staging"]["nginx"]

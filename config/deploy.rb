@@ -2,12 +2,12 @@
 lock '3.2.1'
 require 'json'
 
-load "config/env_setup.rb"
-load "config/ruby_setup.rb"
-load "config/bundle_install.rb"
-load "config/nginx_setup.rb"
-load "config/postgresql_setup.rb"
-load "config/github_setup.rb"
+load "config/recipes/env_setup.rb"
+load "config/recipes/ruby_setup.rb"
+load "config/recipes/bundle_install.rb"
+load "config/recipes/nginx_setup.rb"
+load "config/recipes/postgresql_setup.rb"
+load "config/recipes/github_setup.rb"
 
 set :user, "devops"
 set :application, 'newhire'
