@@ -12,7 +12,7 @@ class VmAccess
       @cluster_name = cluster
       @vm_source    = vm_template_source
       @server_list  = ['nginx','sinatra','db']
-      @env_list     = ['staging','testing','production']
+      @env_list     = ['staging','testing']
       @threads      = []
       connect_vcenter(host,user,psd)
   end #initialize
