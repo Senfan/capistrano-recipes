@@ -1,7 +1,12 @@
 #for role:
 # => nginx
-
-require_relative 'loadinfo'
+if "#{deploy_to}".include? "staging"
+    require_relative 'loadinfo'
+elsif "#{deploy_to}".include? "production"
+    require_relative 'loadinfo_production'
+else
+    require_relative 'loadinfo'
+end
 
 namespace :nginx do
    desc "install nginx"
