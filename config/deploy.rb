@@ -8,6 +8,7 @@ load "config/recipes/bundle_install.rb"
 load "config/recipes/nginx_setup.rb"
 load "config/recipes/postgresql_setup.rb"
 load "config/recipes/github_setup.rb"
+load "config/recipes/config_backup.rb"
 
 set :user, "devops"
 set :application, 'newhire'
