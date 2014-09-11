@@ -35,9 +35,9 @@ namespace :deploy do
           execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
         end
       elsif "#{deploy_to}".include? "production"
-        execute "cd #{deploy_to}; cd ..; mv config.tar.gz #{deploy_to}"
-        execute "cd #{deploy_to}; rm -r config/"
-        execute "cd #{deploy_to}; tar -zxvf config.tar.gz'"      
+        execute "cd #{release_path}; cd ..; mv config.tar.gz #{release_path}"
+        execute "cd #{release_path}; rm -r config/"
+        execute "cd #{release_path}; tar -zxvf config.tar.gz'"      
       end
     end
   end
