@@ -1,35 +1,7 @@
 {
   "servers": {
-    "nginx": [
-      {
-        "server_name": "nginx-server-staging",
-        "ip": "10.110.178.56"
-      }
-    ],
-    "sinatra": [
-      {
-        "server_name": "sinatra-node-1-staging",
-        "ip": "10.110.178.57"
-      },
-      {
-        "server_name": "sinatra-node-2-staging",
-        "ip": "10.110.178.55"
-      }
-    ],
-    "db": [
-      {
-        "server_name": "db-node-staging",
-        "ip": "10.110.178.58"
-      }
-    ]
-  },
-  "testing": {
-    "nginx": [],
-    "sinatra": [],
-    "db": []
-  },
-  "staging": {
-    "production": {
+    "production": 
+    {
       "nginx": [
         {
           "server_name": "nginx-server-production",
@@ -50,6 +22,35 @@
         {
           "server_name": "db-node-production",
           "ip": "10.110.178.54"
+        }
+      ]
+    },
+    "testing": {
+      "nginx": [],
+      "sinatra": [],
+      "db": []
+    },
+    "staging": {
+      "nginx": [
+        {
+          "server_name": "nginx-server-staging",
+          "ip": "10.110.178.56"
+        }
+      ],
+      "sinatra": [
+        {
+          "server_name": "sinatra-node-1-staging",
+          "ip": "10.110.178.57"
+        },
+        {
+          "server_name": "sinatra-node-2-staging",
+          "ip": "10.110.178.55"
+        }
+      ],
+      "db": [
+        {
+          "server_name": "db-node-staging",
+          "ip": "10.110.178.58"
         }
       ]
     }
