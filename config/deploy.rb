@@ -8,7 +8,6 @@ load "config/recipes/bundle_install.rb"
 load "config/recipes/nginx_setup.rb"
 load "config/recipes/postgresql_setup.rb"
 load "config/recipes/github_setup.rb"
-load "config/recipes/config_backup.rb"
 
 set :user, "devops"
 set :application, 'newhire'
@@ -20,8 +19,7 @@ namespace :deploy do
 
   before "postgresql:setup", "ruby:setup"
   before "nginx:setup", "postgresql:setup"
-  before "config:backup", "nginx:setup"
-  before "deploy", "config:backup"
+  before "deploy", "nginx:setup"
 
   task :dbsetup do
     on roles(:sinatra) do
@@ -35,9 +33,9 @@ namespace :deploy do
           execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
         end
       elsif "#{deploy_to}".include? "production"
-        execute "cd #{release_path}; cd ..; mv config.tar.gz #{release_path}"
+        execute "cd #{deploy_to} && cp config.tar.gz #{release_path}"
         execute "cd #{release_path}; rm -r config/"
-        execute "cd #{release_path}; tar -zxvf config.tar.gz'"      
+        execute "cd #{release_path}; tar -zxvf config.tar.gz'"
       end
     end
   end
