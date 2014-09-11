@@ -26,22 +26,36 @@ namespace :deploy do
       if "#{deploy_to}".include? "staging"
         within release_path do
           execute :rake, 'config:create'
+          execute "export RACK_ENV=production"
+
+          dbuser         = DbInfo['username']
+          postgresql_pwd = DbInfo['password'].gsub('$','\$')
+          dbname         = DbInfo['dbname']
+
           execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
           execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
           execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
+
+          execute "cd #{release_path} && sed -i '17s/.*/  username: #{dbuser}/' config/database.yml"
+          execute "cd #{release_path} && sed -i '18s/.*/  password: #{postgresql_pwd}/' config/database.yml"
+          execute "cd #{release_path} && sed -i '19s/.*/  host: #{dbname}/' config/database.yml"
+
         end
       elsif "#{deploy_to}".include? "production"
+        execute "export RACK_ENV=production"
+
         execute "cd #{deploy_to} && cp config.tar.gz #{release_path}"
         execute "cd #{release_path} && rm -r config/"
         execute "cd #{release_path} && tar -zxvf config.tar.gz"
         execute "cd #{release_path} && " +
-                "sed -i '3s/.*/  database: #{deploy_to}/newhire.db' config/database.yml"
+        "sed -i '3s|.*|  database: #{deploy_to}/newhire.db|' config/database.yml"
         execute "cd #{release_path} && " +
-                "sed -i '9s/.*/  database: #{deploy_to}/newhire.db' config/database.yml"
-
+        "sed -i '9s|.*|  database: #{deploy_to}/newhire.db|' config/database.yml"
       end
-      execute :rake, 'db:migrate'
-      execute :rake, 'db:seed'
+      within release_path do
+        execute :rake, 'db:migrate'
+        execute :rake, 'db:seed'
+      end
     end
   end
 
