@@ -8,7 +8,6 @@ namespace :nginx do
                 root_path = "production"
                 sinatraweb1 = Servers['servers']['production']['sinatra'][0]['ip']
                 sinatraweb2 = Servers['servers']['production']['sinatra'][1]['ip']
-                execute "sudo /etc/init.d/nginx stop"
             elsif "#{deploy_to}".include? "staging"
                 root_path = "staging"
                 sinatraweb1 = Servers['servers']['staging']['sinatra'][0]['ip']
@@ -38,7 +37,14 @@ namespace :nginx do
             "error_log /var/log/nginx/error.log;\\n  " +
             "gzip on;\\n   gzip_disable 'msie6';\\n " +
             "}\\n '  > /etc/nginx/nginx.conf \"  "
-            execute "sudo /etc/init.d/nginx start"
+            
+            if "#{deploy_to}".include? "production"
+                execute "sudo service nginx reload"
+            elsif "#{deploy_to}".include? "staging"
+                execute "sudo /etc/init.d/nginx start"
+            else
+                execute "sudo /etc/init.d/nginx start"
+            end
         end
     end
 end

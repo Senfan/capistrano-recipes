@@ -23,13 +23,15 @@ namespace :deploy do
 
   task :dbsetup do
     on roles(:sinatra) do
-      within release_path do
-        execute :rake, 'config:create'
-        execute :rake, 'db:migrate'
-        execute :rake, 'db:seed'
-        execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
-        execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
-        execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
+      if "#{deploy_to}".include? "staging"
+        within release_path do
+          execute :rake, 'config:create'
+          execute :rake, 'db:migrate'
+          execute :rake, 'db:seed'
+          execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
+          execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
+          execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
+        end
       end
     end
   end
@@ -40,8 +42,11 @@ namespace :deploy do
   desc 'Restart application'
   task :restart do
     on roles(:sinatra), in: :sequence, wait: 5 do
-        execute "cd #{release_path} && nohup rackup -D"
-        execute "echo 'done'"      
+      if "#{deploy_to}".include? "production"
+        execute "ps aux | grep -i rackup | awk {'print $2'} | xargs kill -9"
+      end
+      execute "cd #{release_path} && nohup rackup -D"
+      execute "echo 'done'"
     end
   end
 
