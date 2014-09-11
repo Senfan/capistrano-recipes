@@ -34,8 +34,8 @@ namespace :deploy do
         end
       elsif "#{deploy_to}".include? "production"
         execute "cd #{deploy_to} && cp config.tar.gz #{release_path}"
-        execute "cd #{release_path}; rm -r config/"
-        execute "cd #{release_path}; tar -zxvf config.tar.gz'"
+        execute "cd #{release_path} && rm -r config/"
+        execute "cd #{release_path} && tar -zxvf config.tar.gz"
       end
     end
   end
