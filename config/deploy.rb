@@ -26,7 +26,10 @@ namespace :deploy do
       if "#{deploy_to}".include? "staging"
         within release_path do
           execute :rake, 'config:create'
-          execute "export RACK_ENV=staging"
+          execute "echo 'export RACK_ENV=production' | cat - ~/.bashrc > tmp"
+          execute "mv -f ~/tmp ~/.bashrc"
+          execute "rm -f ~/tmp"
+          execute ". ~/.bashrc"
 
           dbuser         = DbInfo['username']
           postgresql_pwd = DbInfo['password'].gsub('$','\$')
@@ -42,7 +45,10 @@ namespace :deploy do
 
         end
       elsif "#{deploy_to}".include? "production"
-        execute "export RACK_ENV=production"
+        execute "echo 'export RACK_ENV=production' | cat - ~/.bashrc > tmp"
+        execute "mv -f ~/tmp ~/.bashrc"
+        execute "rm -f ~/tmp"
+        execute ". ~/.bashrc"
 
         execute "cd #{deploy_to} && cp config.tar.gz #{release_path}"
         execute "cd #{release_path} && rm -r config/"
