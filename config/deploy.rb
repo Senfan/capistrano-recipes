@@ -26,7 +26,7 @@ namespace :deploy do
       if "#{deploy_to}".include? "staging"
         within release_path do
           execute :rake, 'config:create'
-          execute "export RACK_ENV=production"
+          execute "export RACK_ENV=staging"
 
           dbuser         = DbInfo['username']
           postgresql_pwd = DbInfo['password'].gsub('$','\$')

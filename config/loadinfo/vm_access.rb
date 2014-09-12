@@ -10,8 +10,8 @@ class VmAccess
   def initialize(host,user,psd,datacenter,cluster,vm_template_source)
       @data_center  = datacenter
       @cluster_name = cluster
-      @vm_source    = vm_template_source
-      @server_list  = ['nginx','sinatra','db']
+      @vm_source    = ['ubuntu14.04_template','Ubuntu14-04-Swift-Template']
+      @server_list  = ['nginx','sinatra','db','swift']
       @env_list     = ['staging','testing']
       @threads      = []
       connect_vcenter(host,user,psd)
@@ -28,7 +28,7 @@ class VmAccess
       fs_tmp = nil
       dc.datastore.map { | store |
          fs_tmp = store.info.freeSpace
-         if fs_tmp > fs
+         if fs_tmp > fs and /datastore/.match(store.summary.name) == nil
             fs = fs_tmp
             ds = store
          end
@@ -64,8 +64,13 @@ class VmAccess
          @server_list.each do | server |
            @threads << Thread.new do
             servers_json['servers'][env][server].map { | entity |
-             vm           = @vim.serviceInstance.find_datacenter.find_vm(@vm_source) or abort ("Source VM '" + @vm_source + "' Not Found!")         
-             relocateSpec = RbVmomi::VIM.VirtualMachineRelocateSpec(:datastore => get_biggest_datastore() )
+             if server == 'swift'
+                vm_source = @vm_source[1]
+             else
+                vm_source = @vm_source[0] 
+             end   
+             vm           = @vim.serviceInstance.find_datacenter.find_vm(vm_source) or abort ("Source VM '" + vm_source + "' Not Found!")         
+             relocateSpec = RbVmomi::VIM.VirtualMachineRelocateSpec(:datastore => get_biggest_datastore(), :host => get_biggest_datastore().host[0].key )
              spec         = RbVmomi::VIM.VirtualMachineCloneSpec(:location => relocateSpec, :powerOn => false, :template => true)
              task         = vm.CloneVM_Task(:folder => vm.parent, :name => entity['server_name'], :spec => spec)
              task.wait_for_completion  
@@ -93,7 +98,7 @@ class VmAccess
  
       #Get IP address for each vm 
       puts 'Start to get IP address for each vms...'
-      sleep 30
+      sleep 120
       @env_list.each do | env |
          @server_list.each do | server |
             servers_json['servers'][env][server].map { | entity |
