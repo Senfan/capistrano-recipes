@@ -26,11 +26,13 @@
       ]
     },
     "testing": {
+      "swift": [],
       "nginx": [],
       "sinatra": [],
       "db": []
     },
     "staging": {
+      "swift": [],
       "nginx": [
         {
           "server_name": "nginx-server-staging",
