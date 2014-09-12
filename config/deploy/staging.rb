@@ -4,8 +4,12 @@ user          = 'devops'
 nginx_hosts   = Servers["servers"]["staging"]["nginx"]
 sinatra_hosts = Servers["servers"]["staging"]["sinatra"]
 db_hosts      = Servers["servers"]["staging"]["db"]
-set :deploy_to, "/home/#{user}/staging"
+swift_hosts   = Servers["servers"]["staging"]["swift"]
 
+set :deploy_to, "/home/#{user}/staging"
+swift_hosts.each { |host| 
+   server "#{host['ip']}", user: "#{user}", roles: %w{storage}
+}
 nginx_hosts.each { |host| 
 	server "#{host['ip']}", user: "#{user}", roles: %w{nginx}
 }
