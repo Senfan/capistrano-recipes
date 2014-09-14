@@ -48,7 +48,7 @@
       "nginx": [
         {
           "server_name": "nginx-server-staging",
-          "ip": "10.110.178.30"
+          "ip": "10.110.124.75"
         }
       ],
       "sinatra": [
@@ -64,15 +64,15 @@
       "swift": [
         {
           "server_name": "swift-node-1-staging",
-          "ip": "10.110.178.30"
+          "ip": "10.110.178.57"
         },
         {
           "server_name": "swift-node-2-staging",
-          "ip": "10.110.178.22"
+          "ip": "10.110.178.56"
         },
         {
          "server_name": "swift-node-3-staging",
-         "ip": "10.110.178.26"
+         "ip": "10.110.178.55"
         }
       ],
       "db": [

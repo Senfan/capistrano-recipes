@@ -28,7 +28,7 @@ class VmAccess
       fs_tmp = nil
       dc.datastore.map { | store |
          fs_tmp = store.info.freeSpace
-         if fs_tmp > fs
+         if fs_tmp > fs and /datastore/.match(store.summary.name) == nil
             fs = fs_tmp
             ds = store
          end
@@ -70,7 +70,7 @@ class VmAccess
                 vm_source = @vm_source[0] 
              end   
              vm           = @vim.serviceInstance.find_datacenter.find_vm(vm_source) or abort ("Source VM '" + vm_source + "' Not Found!")         
-             relocateSpec = RbVmomi::VIM.VirtualMachineRelocateSpec(:datastore => get_biggest_datastore() )
+             relocateSpec = RbVmomi::VIM.VirtualMachineRelocateSpec(:datastore => get_biggest_datastore(), :host => get_biggest_datastore().host[0].key )
              spec         = RbVmomi::VIM.VirtualMachineCloneSpec(:location => relocateSpec, :powerOn => false, :template => true)
              task         = vm.CloneVM_Task(:folder => vm.parent, :name => entity['server_name'], :spec => spec)
              task.wait_for_completion  
@@ -98,7 +98,7 @@ class VmAccess
  
       #Get IP address for each vm 
       puts 'Start to get IP address for each vms...'
-      sleep 30
+      sleep 120
       @env_list.each do | env |
          @server_list.each do | server |
             servers_json['servers'][env][server].map { | entity |
