@@ -48,7 +48,7 @@
       "nginx": [
         {
           "server_name": "nginx-server-staging",
-          "ip": "10.110.124.75"
+          "ip": "10.110.178.57"
         }
       ],
       "sinatra": [

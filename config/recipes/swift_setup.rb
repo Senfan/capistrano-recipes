@@ -4,10 +4,9 @@
 require_relative '../loadinfo/loadinfo_staging'
 
 serverip      =  "0.0.0.0"
- 
 nginxip       = Servers['servers']['staging']['nginx'][0]['ip'] 
 proxyport     = SwiftInfo['proxyport']
-memcacheport = SwiftInfo['memcacheport']
+memcacheport  = SwiftInfo['memcacheport']
 accountport   = SwiftInfo['accountport']
 containerport = SwiftInfo['containerport']
 objectport    = SwiftInfo['objectport']
@@ -18,6 +17,16 @@ smemcachedlist = " "
 swift_hosts.each { |host|
    smemcachedlist = smemcachedlist + "#{host["ip"]}" +":"+memcacheport +","
 }
+
+#ring config file 
+ringString = "#!/bin/bash \\n cd /etc/swift \\n sudo chown -R swift:swift /etc/swift \\n sudo rm -f *.builder *.ring.gz backups/*.builder backups/*.ring.gz \\n sudo swift-ring-builder object.builder create 10 3 1 \\n sudo swift-ring-builder container.builder create 10 3 1 \\n sudo swift-ring-builder account.builder create 10 3 1 \\n  " 
+swift_hosts.each { |host|
+ringString = ringString +"sudo swift-ring-builder object.builder add z1-#{host["ip"]}:6000/sdb1 100 \\n sudo swift-ring-builder container.builder add z1-#{host["ip"]}:6001/sdb1 100 \\n sudo swift-ring-builder account.builder add z1-#{host["ip"]}:6002/sdb1 100 \\n  "
+}
+ringString =ringString + "sudo swift-ring-builder object.builder \\n sudo swift-ring-builder container.builder  \\n sudo swift-ring-builder account.builder \\n" + 
+                         "sudo swift-ring-builder object.builder  rebalance \\n sudo swift-ring-builder container.builder  rebalance \\n sudo swift-ring-builder account.builder rebalance \\n" 
+
+
 
 namespace :swift do
    desc "install swift&proxy"
@@ -176,7 +185,7 @@ namespace :swift do
                  "[filter:tempauth] \\n" +
                  "use = egg:swift#tempauth \\n" +
                  "user_admin_admin = admin .admin .reseller_admin \\n" +
-                 "user_test_tester = testing .admin http://#{nginxip}/v1/AUTH_system \\n" +
+                 "user_heying_heying = ca\\$hc0w .admin http://#{nginxip}/v1/AUTH_system \\n" +
                  "user_test2_tester2 = testing2 .admin \\n" +
                  "user_test_tester3 = testing3 \\n" +
                  "[filter:staticweb] \\n" +
@@ -204,6 +213,11 @@ namespace :swift do
          #   http://nginxip/v1/AUTH_system/' /etc/swift/proxy-server.conf
          #   sudo perl -pi -e 's/memcache_servers = 0.0.0.0/
          #   memcache_servers = memcacheiplist/' /etc/swift/proxy-server.conf
+         #
+         #config ring file for every proxy node 
+         execute "echo -e '#{ringString}' > /home/devops/ring.sh"
+         execute "sudo chmod +x /home/devops/ring.sh"
+         execute "/home/devops/ring.sh"
          execute "sudo chown -R swift:swift /etc/swift"
          execute "sudo service memcached start"
          execute "sudo service rsync start"
