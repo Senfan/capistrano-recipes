@@ -4,7 +4,7 @@
 require_relative '../loadinfo/loadinfo_staging'
 
 serverip      =  "0.0.0.0"
-nginxip       = Servers['servers']['staging']['nginx'][0]['ip'] 
+nginxip       = Servers['servers']['staging']['swift-nginx'][0]['ip'] 
 proxyport     = SwiftInfo['proxyport']
 memcacheport  = SwiftInfo['memcacheport']
 accountport   = SwiftInfo['accountport']

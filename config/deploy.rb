@@ -7,6 +7,7 @@ load "config/recipes/ruby_setup.rb"
 load "config/recipes/bundle_install.rb"
 load "config/recipes/nginx_setup.rb"
 load "config/recipes/swift_setup.rb"
+load "config/recipes/nginx_swift_setup.rb"
 load "config/recipes/postgresql_setup.rb"
 load "config/recipes/github_setup.rb"
 
@@ -18,11 +19,10 @@ set :pty, false
 
 namespace :deploy do
   
-  before "deploy", "swift:setup"
-
-  #before "postgresql:setup", "ruby:setup"
-  #before "nginx:setup", "postgresql:setup"
-  #before "deploy", "nginx:setup"
+  before "ruby:setup", "swift:setup"
+  before "postgresql:setup", "ruby:setup"
+  before "nginx:setup", "postgresql:setup"
+  before "deploy", "nginx:setup"
 
   task :dbsetup do
     on roles(:sinatra) do
