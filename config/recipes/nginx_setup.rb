@@ -3,6 +3,7 @@
 namespace :nginx do
     desc "install nginx"
     task :setup do
+        puts "nginx start to install=======================================================================    ================================="
         on roles(:nginx) do
             if "#{deploy_to}".include? "production"
                 root_path = "production"
@@ -14,31 +15,62 @@ namespace :nginx do
                 sinatraweb2 = Servers['servers']['staging']['sinatra'][1]['ip']
                 execute "sudo apt-get -y install nginx"
                 execute "sudo /etc/init.d/nginx stop"
+            elsif "#{deploy_to}".include? "testing"
+                root_path = "testing"
+                puts "here"
+                sinatraweb1 = Servers['servers']['testing']['sinatra'][0]['ip']
+                puts "#{sinatraweb1}"
+                puts "nginx has be installed ----------------------------------------------------------------------------------------------------"
+                execute "sudo apt-get -y install nginx"
+                execute "sudo /etc/init.d/nginx stop"
             else
                 root_path = "webapp"
                 execute "sudo apt-get -y install nginx"
                 execute "sudo /etc/init.d/nginx stop"
             end
-
-            execute "sudo bash -c \"echo -e 'user www-data; \\n " +
-            "worker_processes 4; \\n pid /run/nginx.pid;\\n " +
-            "events {\\n worker_connections 768;\\n  }\\n " +
-            "http {\\n upstream webservers {\\n  server #{sinatraweb1}:9292 ;\\n " +
-            "server #{sinatraweb2}:9292 ;\\n }\\n server {\\n listen       80; \\n" +
-            "location =/ { \\n root  /home/devops/#{root_path}/current/; \\n index   index.html; \\n } \\n" +
-            "location ~ .*\\.(gif|jpg|jpeg|png|bmp|swf|js|html|htm|css)\$ { \\n" +
-            "root  /home/devops/#{root_path}/current/; \\n }\\n" +
-            "server_name  webservers;\\n location / {\\n " +
-            "proxy_pass  http://webservers/;\\n " +
-            "}\\n }\\n sendfile on;\\n tcp_nopush on;\\n tcp_nodelay on;\\n" +
-            "keepalive_timeout 65;\\n types_hash_max_size 2048;\\n " +
-            "include /etc/nginx/mime.types;\\n default_type application/octet-stream;\\n " +
-            "access_log /var/log/nginx/access.log;\\n  " +
-            "error_log /var/log/nginx/error.log;\\n  " +
-            "gzip on;\\n   gzip_disable 'msie6';\\n " +
-            "}\\n '  > /etc/nginx/nginx.conf \"  "
-            
-            if "#{deploy_to}".include? "production"
+		    if "#{deploy_to}".include? "testing"
+                execute "sudo bash -c \"echo -e 'user www-data; \\n" +
+                "worker_processes 4; \\n" +
+                "pid /run/nginx.pid;\\n" +
+                "events {\\n" +
+                "worker_connections 768;\\n" +
+                "}\\n" +
+                "http {\\n" +
+                "upstream webservers {\\n" + "server 127.0.0.1:9292;\\n" +
+                "}\\n" +
+                #"upstream swiftservers{\\n" + swiftserverlist +
+                #"}\\n" +
+                "server {\\n" +
+                "listen  80; \\n" +
+                "location =/ { \\n" +
+                "root  /home/devops/#{root_path}/current/; \\n" +
+                "index   index.html; \\n" +
+                "} \\n" +
+                "location ~ .*\\.(gif|jpg|jpeg|png|bmp|swf|js|html|htm|css)\$ { \\n" +
+                "root  /home/devops/#{root_path}/current/; \\n" +
+                "}\\n" +
+                "server_name  webservers;\\n" +
+                "location / {\\n" +
+                "proxy_pass  http://webservers/;\\n" +
+                "}\\n" +
+                #"location /auth {\\n" +
+                #"proxy_pass http://swiftservers/;\\n"+
+                #"}\\n" +
+                "}\\n" +
+                "sendfile on;\\n" +
+                "tcp_nopush on;\\n" +
+                "tcp_nodelay on;\\n" +
+                "keepalive_timeout 65;\\n" +
+                "types_hash_max_size 2048;\\n" +
+                "include /etc/nginx/mime.types;\\n" +
+                "default_type application/octet-stream;\\n" +
+                "access_log /var/log/nginx/access.log;\\n" +
+                "error_log /var/log/nginx/error.log;\\n" +
+                "gzip on;\\n" +
+                "gzip_disable 'msie6';\\n" +
+                "}\\n'  > /etc/nginx/nginx.conf \"  "
+            end
+		    if "#{deploy_to}".include? "production"
                 execute "sudo service nginx reload"
             elsif "#{deploy_to}".include? "staging"
                 execute "sudo /etc/init.d/nginx start"
