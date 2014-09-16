@@ -1,1 +1,19 @@
-{"servers":{"production":{"nginx":[{"server_name":"nginx-server-production","ip":"10.110.178.51"}],"sinatra":[{"server_name":"sinatra-node-1-production","ip":"10.110.178.52"},{"server_name":"sinatra-node-2-production","ip":"10.110.178.53"}],"db":[{"server_name":"db-node-production","ip":"10.110.178.54"}]},"testing":{"nginx":[{"server_name":"nginx-server-testing","ip":"10.110.178.112:49190"}],"sinatra":[{"server_name":"sinatra-node-1-testing","ip":"10.110.178.112:49190"}],"db":[{"server_name":"db-node-1-testing","ip":"10.110.178.112:49190"}]},"staging":{"nginx":[{"server_name":"nginx-server-staging","ip":"10.110.178.56"}],"sinatra":[{"server_name":"sinatra-node-1-staging","ip":"10.110.178.57"},{"server_name":"sinatra-node-2-staging","ip":"10.110.178.55"}],"db":[{"server_name":"db-node-staging","ip":"10.110.178.58"}]}}}
+require_relative "../loadinfo/loadinfo_testing"
+
+user          = 'devops'
+#server "#{Docker_host}:#{Container_port}", user: "devops", roles: %w{sinatra nginx db} 
+set :deploy_to, "/home/#{user}/testing"
+nginx_hosts   = Servers["servers"]["testing"]["nginx"]
+sinatra_hosts = Servers["servers"]["testing"]["sinatra"]
+db_hosts      = Servers["servers"]["testing"]["db"]
+
+nginx_hosts.each { |host|
+        server "#{host['ip']}", user: "#{user}", roles: %w{nginx}
+}
+
+sinatra_hosts.each { |host|
+        server "#{host['ip']}", user: "#{user}", roles: %w{sinatra}
+}
+
+db_hosts.each { |host|
+        server "#{host['ip']}", user: "#{user}", roles: %w{db}
