@@ -26,9 +26,15 @@
       ]
     },
     "testing": {
-      "nginx": [],
-      "sinatra": [],
-      "db": []
+      "nginx": [
+		{"server_name":"nginx-server-testing","ip":"10.110.178.112:49190"}
+	  ],
+      "sinatra": [
+		{"server_name":"sinatra-node-1-testing","ip":"10.110.178.112:49190"}
+	  ],
+      "db": [
+		{"server_name":"db-node-1-testing","ip":"10.110.178.112:49190"}
+	  ]
     },
     "staging": {
       "nginx": [
