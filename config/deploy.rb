@@ -23,19 +23,18 @@ namespace :deploy do
 
   task :dbsetup do
     on roles(:sinatra) do
+      dbuser         = DbInfo['username']
+      postgresql_pwd = DbInfo['password'].gsub('$','\$')
+      dbname         = DbInfo['dbname']
       within release_path do
         execute :rake, 'config:create'
       end
       if "#{deploy_to}".include? "staging"
-        within release_path do          
+        within release_path do
           execute "echo 'export RACK_ENV=staging' | cat - ~/.bashrc > tmp"
           execute "mv -f ~/tmp ~/.bashrc"
           execute "rm -f ~/tmp"
           execute ". ~/.bashrc"
-
-          dbuser         = DbInfo['username']
-          postgresql_pwd = DbInfo['password'].gsub('$','\$')
-          dbname         = DbInfo['dbname']
 
           execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
           execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
