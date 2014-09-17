@@ -1,20 +1,20 @@
 require_relative '../loadinfo/loadinfo_staging'
 
-user          = 'devops'
-nginx_hosts   = Servers["servers"]["staging"]["nginx"]
-sinatra_hosts = Servers["servers"]["staging"]["sinatra"]
-db_hosts      = Servers["servers"]["staging"]["db"]
-swift_hosts   = Servers["servers"]["staging"]["swift"]
+user                = 'devops'
+nginx_hosts         = Servers["servers"]["staging"]["nginx"]
+sinatra_hosts       = Servers["servers"]["staging"]["sinatra"]
+db_hosts            = Servers["servers"]["staging"]["db"]
+swift_hosts         = Servers["servers"]["staging"]["swift"]
 swift_nginx_hosts   = Servers["servers"]["staging"]["swift-nginx"]
 
 
 set :deploy_to, "/home/#{user}/staging"
 swift_hosts.each { |host| 
-   server "#{host['ip']}", user: "#{user}", roles: %w{storage}
+   server "#{host['ip']}", user: "#{user}", roles: %w{storage}, no_release: true
 }
 
 swift_nginx_hosts.each { |host| 
-   server "#{host['ip']}", user: "#{user}", roles: %w{nginx_swift}
+   server "#{host['ip']}", user: "#{user}", roles: %w{nginx_swift}, no_release: true
 }
 
 nginx_hosts.each { |host| 
@@ -26,5 +26,5 @@ sinatra_hosts.each { |host|
 }
 
 db_hosts.each { |host| 
-	server "#{host['ip']}", user: "#{user}", roles: %w{db}
+	server "#{host['ip']}", user: "#{user}", roles: %w{db}, no_release: true
 }

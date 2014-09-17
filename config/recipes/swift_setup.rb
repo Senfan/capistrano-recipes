@@ -1,5 +1,5 @@
 #for role:
-# => storage
+# => swift-nginx
 
 require_relative '../loadinfo/loadinfo_staging'
 
@@ -19,9 +19,15 @@ swift_hosts.each { |host|
 }
 
 #ring config file 
-ringString = "#!/bin/bash \\n cd /etc/swift \\n sudo chown -R swift:swift /etc/swift \\n sudo rm -f *.builder *.ring.gz backups/*.builder backups/*.ring.gz \\n sudo swift-ring-builder object.builder create 10 3 1 \\n sudo swift-ring-builder container.builder create 10 3 1 \\n sudo swift-ring-builder account.builder create 10 3 1 \\n  " 
+ringString = "#!/bin/bash \\n cd /etc/swift \\n sudo chown -R swift:swift /etc/swift \\n" +
+             "sudo rm -f *.builder *.ring.gz backups/*.builder backups/*.ring.gz \\n" +
+             "sudo swift-ring-builder object.builder create 10 3 1 \\n" +
+             "sudo swift-ring-builder container.builder create 10 3 1 \\n" +
+             "sudo swift-ring-builder account.builder create 10 3 1 \\n  " 
 swift_hosts.each { |host|
-ringString = ringString +"sudo swift-ring-builder object.builder add z1-#{host["ip"]}:6000/sdb1 100 \\n sudo swift-ring-builder container.builder add z1-#{host["ip"]}:6001/sdb1 100 \\n sudo swift-ring-builder account.builder add z1-#{host["ip"]}:6002/sdb1 100 \\n  "
+ringString = ringString +"sudo swift-ring-builder object.builder add z1-#{host["ip"]}:6000/sdb1 100 \\n" +
+                         "sudo swift-ring-builder container.builder add z1-#{host["ip"]}:6001/sdb1 100 \\n" +
+                         "sudo swift-ring-builder account.builder add z1-#{host["ip"]}:6002/sdb1 100 \\n  "
 }
 ringString =ringString + "sudo swift-ring-builder object.builder \\n sudo swift-ring-builder container.builder  \\n sudo swift-ring-builder account.builder \\n" + 
                          "sudo swift-ring-builder object.builder  rebalance \\n sudo swift-ring-builder container.builder  rebalance \\n sudo swift-ring-builder account.builder rebalance \\n" 

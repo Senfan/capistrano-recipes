@@ -18,7 +18,8 @@ set :scm, :git
 set :pty, false
 
 namespace :deploy do
-  
+ 
+  before "swift:setup","nginx_swift:setup" 
   before "ruby:setup", "swift:setup"
   before "postgresql:setup", "ruby:setup"
   before "nginx:setup", "postgresql:setup"
