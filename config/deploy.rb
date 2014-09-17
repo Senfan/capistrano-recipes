@@ -23,10 +23,12 @@ namespace :deploy do
 
   task :dbsetup do
     on roles(:sinatra) do
+      within release_path do
+        execute :rake, 'config:create'
+      end
       if "#{deploy_to}".include? "staging"
-        within release_path do
-          execute :rake, 'config:create'
-          execute "echo 'export RACK_ENV=production' | cat - ~/.bashrc > tmp"
+        within release_path do          
+          execute "echo 'export RACK_ENV=staging' | cat - ~/.bashrc > tmp"
           execute "mv -f ~/tmp ~/.bashrc"
           execute "rm -f ~/tmp"
           execute ". ~/.bashrc"
@@ -50,13 +52,13 @@ namespace :deploy do
         execute "rm -f ~/tmp"
         execute ". ~/.bashrc"
 
-        execute "cd #{deploy_to} && cp config.tar.gz #{release_path}"
-        execute "cd #{release_path} && rm -r config/"
-        execute "cd #{release_path} && tar -zxvf config.tar.gz"
-        execute "cd #{release_path} && " +
-        "sed -i '3s|.*|  database: #{deploy_to}/newhire.db|' config/database.yml"
-        execute "cd #{release_path} && " +
-        "sed -i '9s|.*|  database: #{deploy_to}/newhire.db|' config/database.yml"
+        execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
+        execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
+        execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
+
+        execute "cd #{release_path} && sed -i '25s/.*/  username: #{dbuser}/' config/database.yml"
+        execute "cd #{release_path} && sed -i '26s/.*/  password: #{postgresql_pwd}/' config/database.yml"
+        execute "cd #{release_path} && sed -i '27s/.*/  host: #{dbname}/' config/database.yml"
       end
       within release_path do
         execute :rake, 'db:migrate'
