@@ -4,7 +4,13 @@ namespace :nginx do
     desc "install nginx"
     task :setup do
         puts "nginx start to install=======================================================================    ================================="
-        on roles(:nginx) do
+        var_role = "nginx"
+		
+		if "#{deploy_to}".include? "testing"
+		  var_role = "all_in_one"
+		end
+		
+		on roles(:var_role) do
             if "#{deploy_to}".include? "production"
                 root_path = "production"
                 sinatraweb1 = Servers['servers']['production']['sinatra'][0]['ip']
@@ -66,7 +72,8 @@ namespace :nginx do
                 execute "sudo apt-get -y install nginx"
                 execute "sudo /etc/init.d/nginx stop"
             end
-		    if "#{deploy_to}".include? "testing"
+		    
+			if "#{deploy_to}".include? "testing"
                 execute "sudo bash -c \"echo -e 'user www-data; \\n" +
                 "worker_processes 4; \\n" +
                 "pid /run/nginx.pid;\\n" +

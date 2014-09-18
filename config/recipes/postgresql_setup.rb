@@ -9,8 +9,15 @@ namespace :postgresql do
         postgresql_pwd  = DbInfo['password'].gsub('$','\$')
         webappdb        = DbInfo['dbname']
         subnetwork      = DbInfo['subnetwork']
-
-        on roles(:db) do
+		
+		var_role = "db"
+		if "#{deploy_to}".include? "testing"
+		  var_role = "all_in_one"
+		else
+		  var_role = "db"
+		end
+		
+        on roles(:var_role) do
             if "#{deploy_to}".include? "staging"
                 execute "sudo apt-get -y install postgresql"
                 execute "sudo /etc/init.d/postgresql stop"

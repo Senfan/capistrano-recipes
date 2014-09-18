@@ -22,8 +22,8 @@ namespace :deploy do
   before "deploy", "nginx:setup"
 
   task :dbsetup do
-    on roles(:sinatra) do
-      if "#{deploy_to}".include? "staging"
+    if "#{deploy_to}".include? "staging"
+	  on roles(:sinatra) do
         within release_path do
           execute :rake, 'config:create'
           execute :rake, 'db:migrate'
@@ -32,11 +32,24 @@ namespace :deploy do
           execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
           execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
         end
-      elsif "#{deploy_to}".include? "production"
+	  end
+    elsif "#{deploy_to}".include? "production"
+	  on roles(:sinatra) do
         execute "cd #{deploy_to} && cp config.tar.gz #{release_path}"
         execute "cd #{release_path} && rm -r config/"
         execute "cd #{release_path} && tar -zxvf config.tar.gz"
-      end
+	  end
+	else
+	  on roles(:all_in_one) do
+        within release_path do
+          execute :rake, 'config:create'
+          execute :rake, 'db:migrate'
+          execute :rake, 'db:seed'
+          execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
+          execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
+          execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
+        end
+	  end
     end
   end
 
@@ -45,23 +58,37 @@ namespace :deploy do
   
   desc 'Restart application'
   task :restart do
-    on roles(:sinatra), in: :sequence, wait: 5 do
-      if "#{deploy_to}".include? "production"
-        execute "ps aux | grep -i rackup | awk {'print $2'} | xargs kill -9"
+	if "#{deploy_to}".include? "staging" or "#{deploy_to}".include? "production"
+	  on roles(:sinatra), in: :sequence, wait: 5 do
+        if "#{deploy_to}".include? "production"
+          execute "ps aux | grep -i rackup | awk {'print $2'} | xargs kill -9"
+        end
+        execute "cd #{release_path} && nohup rackup -D"
+        execute "echo 'done'"
       end
-      execute "cd #{release_path} && nohup rackup -D"
-      execute "echo 'done'"
-    end
+	else
+	  on roles(:all_in_one), in: :sequence, wait: 5 do
+	    execute "cd #{release_path} && nohup rackup -D"
+        execute "echo 'done'"
+	  end
+	end
   end
 
   after :publishing, :restart
 
   after :restart, :clear_cache do
-    on roles(:web), in: :groups, limit: 3, wait: 10 do
-      within release_path do
-        execute :rake, 'cache:clear'
+    if "#{deploy_to}".include? "staging" or "#{deploy_to}".include? "production"
+      on roles(:web), in: :groups, limit: 3, wait: 10 do
+        within release_path do
+          execute :rake, 'cache:clear'
+        end
+      end
+	else
+	  on roles(:all_in_one), in: :groups, limit: 3, wait: 10 do
+        within release_path do
+          execute :rake, 'cache:clear'
+        end
       end
     end
   end
-
 end

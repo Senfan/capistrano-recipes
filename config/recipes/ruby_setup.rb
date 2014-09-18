@@ -7,7 +7,12 @@ namespace :ruby do
 
   desc "install rbenv, ruby, and bundler"
   task :setup do
-    on roles(:sinatra) do
+	var_role = "sinatra"
+	if "#{deploy_to}".include? "testing"
+	  var_role = "all_in_one"
+	end
+	
+    on roles(:var_role) do
       if "#{deploy_to}".include? "staging"
         if capture("if [ -d ~/.rbenv ]; then echo 'true'; fi") == ''
           execute "git clone https://github.com/sstephenson/rbenv.git ~/.rbenv"
