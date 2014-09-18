@@ -55,6 +55,12 @@ namespace :nginx do
                 puts "nginx has be installed ----------------------------------------------------------------------------------------------------"
                 execute "sudo apt-get -y install nginx"
                 execute "sudo /etc/init.d/nginx stop"
+			elsif "#{deploy_to}".include? "testing"
+                root_path = "testing"
+                sinatraweb1 = Servers['servers']['testing']['sinatra'][0]['ip']
+                puts "#{sinatraweb1}"
+                execute "sudo apt-get -y install nginx"
+                execute "sudo /etc/init.d/nginx stop"
             else
                 root_path = "webapp"
                 execute "sudo apt-get -y install nginx"
