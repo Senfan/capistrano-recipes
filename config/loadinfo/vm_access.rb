@@ -10,8 +10,8 @@ class VmAccess
   def initialize(host,user,psd,datacenter,cluster,vm_template_source)
       @data_center  = datacenter
       @cluster_name = cluster
-      @vm_source    = ['ubuntu14.04_template','Ubuntu14-04-Swift-Template']
-      @server_list  = ['nginx','sinatra','db','swift']
+      @vm_source    = ['ubuntu14.04_template','Swift-Template-release']
+      @server_list  = ['nginx','sinatra','db','swift','swift-nginx']
       @env_list     = ['staging','testing']
       @threads      = []
       connect_vcenter(host,user,psd)
@@ -98,7 +98,7 @@ class VmAccess
  
       #Get IP address for each vm 
       puts 'Start to get IP address for each vms...'
-      sleep 120
+      sleep 150
       @env_list.each do | env |
          @server_list.each do | server |
             servers_json['servers'][env][server].map { | entity |

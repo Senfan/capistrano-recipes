@@ -1,24 +1,18 @@
 #for role:
 # => nginx
-namespace :nginx do
-    desc "install nginx"
+namespace :nginx_swift do
+    desc "install nginx for swift"
     task :setup do
-        on roles(:nginx) do
-            sinatraweblist = ""
+        on roles(:nginx_swift) do
             swiftserverlist = "" 
             proxyport     = SwiftInfo['proxyport']
-            swift_nginx   = ""
             if "#{deploy_to}".include? "production"
-                root_path    = "production"
-                sinatrawebp  = Servers['servers']['production']['sinatra']
-                swift_hosts  = Servers["servers"]["production"]["swift"]
-                swift_nginx  =Servers["servers"]["production"]["swift-nginx"][0]["ip"]
+                root_path = "production"
+                swift_hosts   = Servers["servers"]["production"]["swift"]
                
             elsif "#{deploy_to}".include? "staging"
                 root_path = "staging"
-                sinatrawebp  = Servers['servers']['staging']['sinatra']
-                swift_hosts  = Servers["servers"]["staging"]["swift"]
-                swift_nginx  = Servers["servers"]["staging"]["swift-nginx"][0]["ip"]
+                swift_hosts   = Servers["servers"]["staging"]["swift"]
 
                 execute "sudo apt-get -y install nginx"
                 execute "sudo /etc/init.d/nginx stop"
@@ -28,12 +22,9 @@ namespace :nginx do
                 execute "sudo /etc/init.d/nginx stop"
             end
 
-            sinatrawebp.each { |host|
-               sinatraweblist = sinatraweblist+ "server " + "#{host["ip"]}" +":9292;\\n"
+            swift_hosts.each { |host|
+               swiftserverlist = swiftserverlist +"server "+ "#{host["ip"]}" +":#{proxyport};\\n"
             }
-            #swift_hosts.each { |host|
-            #   swiftserverlist = swiftserverlist +"server "+ "#{host["ip"]}" +":#{proxyport};\\n"
-            #}
             
             execute "sudo bash -c \"echo -e 'user www-data; \\n" +
             "worker_processes 4; \\n" +
@@ -42,10 +33,8 @@ namespace :nginx do
             "worker_connections 768;\\n" +
             "}\\n" +
             "http {\\n" +
-            "upstream webservers {\\n" + sinatraweblist +
+            "upstream swiftservers{\\n" + swiftserverlist +
             "}\\n" +
-            #"upstream swiftservers{\\n" + swiftserverlist +
-            #"}\\n" +
             "server {\\n" +
             "listen  80; \\n" +
             "location =/ { \\n" +
@@ -57,17 +46,8 @@ namespace :nginx do
             "}\\n" +
             "server_name  webservers;\\n" +
             "location / {\\n" +
-            "proxy_pass  http://webservers/;\\n" +
+            "proxy_pass http://swiftservers/;\\n"+
             "}\\n" +
-			"location /auth/v1.0 {\\n" +
-            "proxy_pass  http://\"#{swift_nginx}\";\\n" +
-            "}\\n" +
-			"location /v1 {\\n" +
-            "proxy_pass  http://\"#{swift_nginx}\";\\n" +
-            "}\\n" +
-            #"location /auth {\\n" +
-            #"proxy_pass http://swiftservers/;\\n"+
-            #"}\\n" +
             "}\\n" +
             "sendfile on;\\n" +
             "tcp_nopush on;\\n" +

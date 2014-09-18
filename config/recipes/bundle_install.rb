@@ -4,7 +4,7 @@
 namespace :bundle do
   desc 'run bundle install'
   task :install do
-    on roles(:sinatra) do
+    on roles(:sinatra, :db) do
       execute "cd #{release_path} && bundle install"
     end
   end

@@ -15,3 +15,7 @@ end
 
 db_info = File.read('./config/config_file/pg.json')
 DbInfo  = JSON.parse(db_info)
+
+swift_info = File.read('./config/config_file/swift.json')
+SwiftInfo  = JSON.parse(swift_info)
+
