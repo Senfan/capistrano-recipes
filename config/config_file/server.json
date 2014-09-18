@@ -25,15 +25,59 @@
         }
       ]
     },
-    "testing": {
+    "testing0": {
       "nginx": [
-		{"server_name":"nginx-server-testing","ip":"10.110.178.112:49190"}
+		{"server_name":"nginx-server-testing0","ip":"10.110.178.112:49090"}
 	  ],
       "sinatra": [
-		{"server_name":"sinatra-node-1-testing","ip":"10.110.178.112:49190"}
+		{"server_name":"sinatra-node-1-testing0","ip":"10.110.178.112:49090"}
 	  ],
       "db": [
-		{"server_name":"db-node-1-testing","ip":"10.110.178.112:49190"}
+		{"server_name":"db-node-1-testing0","ip":"10.110.178.112:49190"}
+	  ]
+    },
+	"testing1": {
+      "nginx": [
+		{"server_name":"nginx-server-testing1","ip":"10.110.178.112:49090"}
+	  ],
+      "sinatra": [
+		{"server_name":"sinatra-node-1-testing1","ip":"10.110.178.112:49090"}
+	  ],
+      "db": [
+		{"server_name":"db-node-1-testing1","ip":"10.110.178.112:49190"}
+	  ]
+    },
+	"testing2": {
+      "nginx": [
+		{"server_name":"nginx-server-testing2","ip":"10.110.178.112:49090"}
+	  ],
+      "sinatra": [
+		{"server_name":"sinatra-node-1-testing2","ip":"10.110.178.112:49090"}
+	  ],
+      "db": [
+		{"server_name":"db-node-1-testing2","ip":"10.110.178.112:49190"}
+	  ]
+    },
+	"testing3": {
+      "nginx": [
+		{"server_name":"nginx-server-testing3","ip":"10.110.178.112:49090"}
+	  ],
+      "sinatra": [
+		{"server_name":"sinatra-node-1-testing3","ip":"10.110.178.112:49090"}
+	  ],
+      "db": [
+		{"server_name":"db-node-1-testing3","ip":"10.110.178.112:49190"}
+	  ]
+    },
+	"testing4": {
+      "nginx": [
+		{"server_name":"nginx-server-testing4","ip":"10.110.178.112:49090"}
+	  ],
+      "sinatra": [
+		{"server_name":"sinatra-node-1-testing4","ip":"10.110.178.112:49090"}
+	  ],
+      "db": [
+		{"server_name":"db-node-1-testing4","ip":"10.110.178.112:49190"}
 	  ]
     },
     "staging": {
