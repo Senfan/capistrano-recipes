@@ -68,37 +68,44 @@ namespace :deploy do
         execute :rake, 'config:create'
       end
       if "#{deploy_to}".include? "staging"
-        within release_path do
-          host = Servers["servers"]["staging"]["db"][0]['ip']
-          execute "echo 'export RACK_ENV=staging' | cat - ~/.bashrc > tmp"
-          execute "mv -f ~/tmp ~/.bashrc"
-          execute "rm -f ~/tmp"
-          execute ". ~/.bashrc"
 
-          execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
-          execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
-          execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
+        host = Servers["servers"]["staging"]["db"][0]['ip']
 
-          execute "cd #{release_path} && sed -i '17s/.*/  username: #{dbuser}/' config/database.yml"
-          execute "cd #{release_path} && sed -i '18s/.*/  password: #{postgresql_pwd}/' config/database.yml"
-          execute "cd #{release_path} && sed -i '19s/.*/  host: #{host}/' config/database.yml"
+        execute "echo 'export RACK_ENV=staging' | cat - ~/.bashrc > tmp"
+        execute "mv -f ~/tmp ~/.bashrc"
+        execute "rm -f ~/tmp"
+        execute ". ~/.bashrc"
 
-        end
+        execute "cd #{release_path} && sed -i '17s/.*/  username: #{dbuser}/' config/database.yml"
+        execute "cd #{release_path} && sed -i '18s/.*/  password: #{postgresql_pwd}/' config/database.yml"
+        execute "cd #{release_path} && sed -i '19s/.*/  host: #{host}/' config/database.yml"
+
       elsif "#{deploy_to}".include? "production"
+
         host = Servers["servers"]["production"]["db"][0]['ip']
+
         execute "echo 'export RACK_ENV=production' | cat - ~/.bashrc > tmp"
         execute "mv -f ~/tmp ~/.bashrc"
         execute "rm -f ~/tmp"
         execute ". ~/.bashrc"
 
-        execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
-        execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
-        execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
-
         execute "cd #{release_path} && sed -i '25s/.*/  username: #{dbuser}/' config/database.yml"
         execute "cd #{release_path} && sed -i '26s/.*/  password: #{postgresql_pwd}/' config/database.yml"
         execute "cd #{release_path} && sed -i '27s/.*/  host: #{host}/' config/database.yml"
+        
       end
+<<<<<<< HEAD
+=======
+
+      execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
+      execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
+      execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
+
+      within release_path do
+        execute :rake, 'db:migrate'
+        execute :rake, 'db:seed'
+      end
+>>>>>>> upstream/master
     end
   end
 
