@@ -49,14 +49,13 @@ namespace :deploy do
           execute "cd #{release_path} && sed -i '17s/.*/  username: #{dbuser}/' config/database.yml"
           execute "cd #{release_path} && sed -i '18s/.*/  password: #{postgresql_pwd}/' config/database.yml"
           execute "cd #{release_path} && sed -i '19s/.*/  host: #{host}/' config/database.yml"
- 
-          execute "cd #{release_path} && nohup rackup -D"
 
         end
       end
       within release_path do
         execute :rake, 'db:migrate'
         execute :rake, 'db:seed'
+        execute "cd #{release_path} && nohup rackup -D"
       end
 
 	end
