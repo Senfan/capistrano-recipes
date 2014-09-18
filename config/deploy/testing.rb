@@ -17,3 +17,4 @@ sinatra_hosts.each { |host|
 
 db_hosts.each { |host|
         server "#{host['ip']}", user: "#{user}", roles: %w{db}
+}
