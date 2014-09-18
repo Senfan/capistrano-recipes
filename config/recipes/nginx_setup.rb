@@ -7,15 +7,18 @@ namespace :nginx do
             sinatraweblist = ""
             swiftserverlist = "" 
             proxyport     = SwiftInfo['proxyport']
+            swift_nginx   = ""
             if "#{deploy_to}".include? "production"
-                root_path = "production"
-                sinatrawebp = Servers['servers']['production']['sinatra']
-                swift_hosts   = Servers["servers"]["production"]["swift"]
+                root_path    = "production"
+                sinatrawebp  = Servers['servers']['production']['sinatra']
+                swift_hosts  = Servers["servers"]["production"]["swift"]
+                swift_nginx  =Servers["servers"]["production"]["swift-nginx"][0]["ip"]
                
             elsif "#{deploy_to}".include? "staging"
                 root_path = "staging"
-                sinatrawebp = Servers['servers']['staging']['sinatra']
-                swift_hosts   = Servers["servers"]["staging"]["swift"]
+                sinatrawebp  = Servers['servers']['staging']['sinatra']
+                swift_hosts  = Servers["servers"]["staging"]["swift"]
+                swift_nginx  = Servers["servers"]["staging"]["swift-nginx"][0]["ip"]
 
                 execute "sudo apt-get -y install nginx"
                 execute "sudo /etc/init.d/nginx stop"
@@ -55,6 +58,12 @@ namespace :nginx do
             "server_name  webservers;\\n" +
             "location / {\\n" +
             "proxy_pass  http://webservers/;\\n" +
+            "}\\n" +
+			"location /auth/v1.0 {\\n" +
+            "proxy_pass  http://\"#{swift_nginx}\";\\n" +
+            "}\\n" +
+			"location /v1 {\\n" +
+            "proxy_pass  http://\"#{swift_nginx}\";\\n" +
             "}\\n" +
             #"location /auth {\\n" +
             #"proxy_pass http://swiftservers/;\\n"+

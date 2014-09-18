@@ -194,6 +194,8 @@ namespace :swift do
                  "user_heying_heying = ca\\$hc0w .admin http://#{nginxip}/v1/AUTH_system \\n" +
                  "user_test2_tester2 = testing2 .admin \\n" +
                  "user_test_tester3 = testing3 \\n" +
+                 "#set the token_life time   default 86400\\n" + 
+                 "#token_life = 0\\n" +
                  "[filter:staticweb] \\n" +
                  "use = egg:swift#staticweb \\n" +
                  "[filter:account-quotas] \\n" +
