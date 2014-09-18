@@ -26,15 +26,14 @@ namespace :deploy do
   before "deploy", "nginx:setup"
 
   task :dbsetup do
-    on roles(:db) do
-	  dbuser         = DbInfo['username']
-      postgresql_pwd = DbInfo['password'].gsub('$','\$')
-      dbname         = DbInfo['dbname']
+    dbuser         = DbInfo['username']
+    postgresql_pwd = DbInfo['password'].gsub('$','\$')
+    dbname         = DbInfo['dbname']
 
+    on roles(:db) do
       within release_path do
         execute :rake, 'config:create'
       end
-      if "#{deploy_to}".include? "staging"
         within release_path do
           host = Servers["servers"]["staging"]["db"][0]['ip']
           execute "echo 'export RACK_ENV=staging' | cat - ~/.bashrc > tmp"
@@ -51,19 +50,18 @@ namespace :deploy do
           execute "cd #{release_path} && sed -i '19s/.*/  host: #{host}/' config/database.yml"
 
         end
-      end
       within release_path do
         execute :rake, 'db:migrate'
         execute :rake, 'db:seed'
+        if "#{deploy_to}".include? "production"
+           execute "ps aux | grep -i rackup | awk {'print $2'} | xargs kill -9"
+        end
+
         execute "cd #{release_path} && nohup rackup -D"
       end
 
 	end
     on roles(:sinatra) do
-      dbuser         = DbInfo['username']
-      postgresql_pwd = DbInfo['password'].gsub('$','\$')
-      dbname         = DbInfo['dbname']
-
       within release_path do
         execute :rake, 'config:create'
       end
@@ -94,8 +92,6 @@ namespace :deploy do
         execute "cd #{release_path} && sed -i '27s/.*/  host: #{host}/' config/database.yml"
         
       end
-<<<<<<< HEAD
-=======
 
       execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
       execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
@@ -105,7 +101,6 @@ namespace :deploy do
         execute :rake, 'db:migrate'
         execute :rake, 'db:seed'
       end
->>>>>>> upstream/master
     end
   end
 
