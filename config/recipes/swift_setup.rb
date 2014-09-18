@@ -29,8 +29,12 @@ ringString = ringString +"sudo swift-ring-builder object.builder add z1-#{host["
                          "sudo swift-ring-builder container.builder add z1-#{host["ip"]}:6001/sdb1 100 \\n" +
                          "sudo swift-ring-builder account.builder add z1-#{host["ip"]}:6002/sdb1 100 \\n  "
 }
-ringString =ringString + "sudo swift-ring-builder object.builder \\n sudo swift-ring-builder container.builder  \\n sudo swift-ring-builder account.builder \\n" + 
-                         "sudo swift-ring-builder object.builder  rebalance \\n sudo swift-ring-builder container.builder  rebalance \\n sudo swift-ring-builder account.builder rebalance \\n" 
+ringString =ringString + "sudo swift-ring-builder object.builder \\n" +
+                         "sudo swift-ring-builder container.builder  \\n" +
+                         "sudo swift-ring-builder account.builder \\n" + 
+                         "sudo swift-ring-builder object.builder  rebalance \\n " +
+                         "sudo swift-ring-builder container.builder  rebalance \\n" +
+                         "sudo swift-ring-builder account.builder rebalance \\n" 
 
 
 
