@@ -3,14 +3,14 @@ require 'json'
 Docker_host    = "10.110.178.112"
 SSH_port       = "50022"
 WEB_port       = "50080"
-Container_name = "test_container"
+Container_name = "test_containerVM"
 Docker_image   = "test_image_from_dockerfile"
 
 server_info = File.read('./config/config_file/server.json')
 Servers     = JSON.parse(server_info)
-Servers["servers"]["testing"]["nginx"][0]["ip"]   = Docker_host + ":" + SSH_port
-Servers["servers"]["testing"]["sinatra"][0]["ip"] = Docker_host + ":" + SSH_port
-Servers["servers"]["testing"]["db"][0]["ip"]      = Docker_host + ":" + SSH_port
+Servers["servers"]["testingVM"]["nginx"][0]["ip"]   = Docker_host + ":" + SSH_port
+Servers["servers"]["testingVM"]["sinatra"][0]["ip"] = Docker_host + ":" + SSH_port
+Servers["servers"]["testingVM"]["db"][0]["ip"]      = Docker_host + ":" + SSH_port
 
 File.open('./config/config_file/server.json', 'w') do |f|
         f.write(Servers.to_json)
