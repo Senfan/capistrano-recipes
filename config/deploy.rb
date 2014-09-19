@@ -11,7 +11,6 @@ load "config/recipes/github_setup.rb"
 
 set :user, "devops"
 set :application, 'newhire'
-set :repo_url, 'git@github.com:/teddy-hoo/newhire-1'
 set :scm, :git
 set :pty, false
 
@@ -42,6 +41,10 @@ namespace :deploy do
 	else
 	  on roles(:all_in_one) do
         within release_path do
+		  execute "echo 'export RACK_ENV=production' | cat - ~/.bashrc > tmp"
+          execute "mv -f ~/tmp ~/.bashrc"
+          execute "rm -f ~/tmp"
+          execute ". ~/.bashrc"
           execute :rake, 'config:create'
           execute :rake, 'db:migrate'
           execute :rake, 'db:seed'

@@ -4,13 +4,73 @@ namespace :nginx do
     desc "install nginx"
     task :setup do
         puts "nginx start to install=======================================================================    ================================="
-        var_role = "nginx"
-		
+        
 		if "#{deploy_to}".include? "testing"
-		  var_role = "all_in_one"
-		end
-		
-		on roles(:var_role) do
+		  on roles(:all_in_one) do
+            if "#{deploy_to}".include? "production"
+                root_path = "production"
+                sinatraweb1 = Servers['servers']['production']['sinatra'][0]['ip']
+                sinatraweb2 = Servers['servers']['production']['sinatra'][1]['ip']
+            elsif "#{deploy_to}".include? "staging"
+                root_path = "staging"
+                sinatraweb1 = Servers['servers']['staging']['sinatra'][0]['ip']
+                sinatraweb2 = Servers['servers']['staging']['sinatra'][1]['ip']
+                execute "sudo apt-get -y install nginx"
+                execute "sudo /etc/init.d/nginx stop"
+            elsif "#{deploy_to}".include? "testing0"
+                root_path = "testing0"
+                puts "here"
+                sinatraweb1 = Servers['servers']['testing0']['sinatra'][0]['ip']
+                puts "#{sinatraweb1}"
+                puts "nginx has be installed ----------------------------------------------------------------------------------------------------"
+                execute "sudo apt-get -y install nginx"
+                execute "sudo /etc/init.d/nginx stop"
+			elsif "#{deploy_to}".include? "testing1"
+                root_path = "testing1"
+                puts "here"
+                sinatraweb1 = Servers['servers']['testing1']['sinatra'][0]['ip']
+                puts "#{sinatraweb1}"
+                puts "nginx has be installed ----------------------------------------------------------------------------------------------------"
+                execute "sudo apt-get -y install nginx"
+                execute "sudo /etc/init.d/nginx stop"
+			elsif "#{deploy_to}".include? "testing2"
+                root_path = "testing2"
+                puts "here"
+                sinatraweb1 = Servers['servers']['testing2']['sinatra'][0]['ip']
+                puts "#{sinatraweb1}"
+                puts "nginx has be installed ----------------------------------------------------------------------------------------------------"
+                execute "sudo apt-get -y install nginx"
+                execute "sudo /etc/init.d/nginx stop"
+			elsif "#{deploy_to}".include? "testing3"
+                root_path = "testing3"
+                puts "here"
+                sinatraweb1 = Servers['servers']['testing3']['sinatra'][0]['ip']
+                puts "#{sinatraweb1}"
+                puts "nginx has be installed ----------------------------------------------------------------------------------------------------"
+                execute "sudo apt-get -y install nginx"
+                execute "sudo /etc/init.d/nginx stop"
+			elsif "#{deploy_to}".include? "testing4"
+                root_path = "testing4"
+                puts "here"
+                sinatraweb1 = Servers['servers']['testing4']['sinatra'][0]['ip']
+                puts "#{sinatraweb1}"
+                puts "nginx has be installed ----------------------------------------------------------------------------------------------------"
+                execute "sudo apt-get -y install nginx"
+                execute "sudo /etc/init.d/nginx stop"
+			elsif "#{deploy_to}".include? "testingVM"
+                root_path = "testingVM"
+                sinatraweb1 = Servers['servers']['testingVM']['sinatra'][0]['ip']
+                puts "#{sinatraweb1}"
+                execute "sudo apt-get -y install nginx"
+                execute "sudo /etc/init.d/nginx stop"
+            else
+                root_path = "webapp"
+                execute "sudo apt-get -y install nginx"
+                execute "sudo /etc/init.d/nginx stop"
+            end
+		  end
+	    else
+		  on roles(:nginx) do
             if "#{deploy_to}".include? "production"
                 root_path = "production"
                 sinatraweb1 = Servers['servers']['production']['sinatra'][0]['ip']
@@ -72,6 +132,7 @@ namespace :nginx do
                 execute "sudo apt-get -y install nginx"
                 execute "sudo /etc/init.d/nginx stop"
             end
+		 end
 		    
 			if "#{deploy_to}".include? "testing"
                 execute "sudo bash -c \"echo -e 'user www-data; \\n" +

@@ -10,14 +10,8 @@ namespace :postgresql do
         webappdb        = DbInfo['dbname']
         subnetwork      = DbInfo['subnetwork']
 		
-		var_role = "db"
-		if "#{deploy_to}".include? "testing"
-		  var_role = "all_in_one"
-		else
-		  var_role = "db"
-		end
 		
-        on roles(:var_role) do
+          on roles(:db) do
             if "#{deploy_to}".include? "staging"
                 execute "sudo apt-get -y install postgresql"
                 execute "sudo /etc/init.d/postgresql stop"
@@ -50,6 +44,6 @@ namespace :postgresql do
                 execute "sudo /etc/init.d/postgresql restart"
             end
         end
-    end
+	  end
 end
 
