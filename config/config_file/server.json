@@ -54,44 +54,44 @@
     "staging": {
       "nginx": [
         {
-          "server_name": "nginx-server",
-          "ip": "10.110.178.48"
+          "server_name": "nginx-server-staging",
+          "ip": "10.110.178.26"
         }
       ],
       "sinatra": [
         {
-          "server_name": "sinatra-node-1",
-          "ip": "10.110.178.37"
+          "server_name": "sinatra-node-1-staging",
+          "ip": "10.110.178.28"
         },
         {
-          "server_name": "sinatra-node-2",
-          "ip": "10.110.178.41"
+          "server_name": "sinatra-node-2-staging",
+          "ip": "10.110.178.32"
         }
       ],
       "swift-nginx": [
         {
-          "server_name": "swift-nginx",
-          "ip": "10.110.178.49"
+          "server_name": "swift-nginx-staging",
+          "ip": "10.110.178.37"
         }
       ],
       "swift": [
         {
-          "server_name": "swift-demo-1",
+          "server_name": "swift-demo01",
+          "ip": "10.110.178.29"
+        },
+        {
+          "server_name": "swift-demo02",
+          "ip": "10.110.178.22"
+        },
+        {
+          "server_name": "swift-demo03",
           "ip": "10.110.178.45"
-        },
-        {
-          "server_name": "swift-demo-2",
-          "ip": "10.110.178.46"
-        },
-        {
-          "server_name": "swift-demo-3",
-          "ip": "10.110.178.47"
         }
       ],
       "db": [
         {
-          "server_name": "db-node",
-          "ip": "10.110.178.44"
+          "server_name": "db-node-staging",
+          "ip": "10.110.178.30"
         }
       ]
     }
