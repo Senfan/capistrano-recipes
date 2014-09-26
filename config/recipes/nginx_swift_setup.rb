@@ -4,18 +4,15 @@ namespace :nginx_swift do
     desc "install nginx for swift"
     task :setup do
         on roles(:nginx_swift) do
-            swiftserverlist = "" 
+            swiftserverlist = ""
             proxyport     = SwiftInfo['proxyport']
             if "#{deploy_to}".include? "production"
                 root_path = "production"
                 swift_hosts   = Servers["servers"]["production"]["swift"]
-               
+
             elsif "#{deploy_to}".include? "staging"
                 root_path = "staging"
                 swift_hosts   = Servers["servers"]["staging"]["swift"]
-
-                execute "sudo apt-get -y install nginx"
-                execute "sudo /etc/init.d/nginx stop"
             else
                 root_path = "webapp"
                 execute "sudo apt-get -y install nginx"
@@ -23,9 +20,9 @@ namespace :nginx_swift do
             end
 
             swift_hosts.each { |host|
-               swiftserverlist = swiftserverlist +"server "+ "#{host["ip"]}" +":#{proxyport};\\n"
+                swiftserverlist = swiftserverlist +"server "+ "#{host["ip"]}" +":#{proxyport};\\n"
             }
-            
+
             execute "sudo bash -c \"echo -e 'user www-data; \\n" +
             "worker_processes 4; \\n" +
             "pid /run/nginx.pid;\\n" +
@@ -61,11 +58,9 @@ namespace :nginx_swift do
             "gzip on;\\n" +
             "gzip_disable 'msie6';\\n" +
             "}\\n'  > /etc/nginx/nginx.conf \"  "
-            
-            if "#{deploy_to}".include? "production"
+
+            if "#{deploy_to}".include? "production" or "#{deploy_to}".include? "staging"
                 execute "sudo service nginx reload"
-            elsif "#{deploy_to}".include? "staging"
-                execute "sudo /etc/init.d/nginx start"
             else
                 execute "sudo /etc/init.d/nginx start"
             end

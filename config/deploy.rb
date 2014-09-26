@@ -18,8 +18,8 @@ set :scm, :git
 set :pty, false
 
 namespace :deploy do
- 
-  before "swift:setup","nginx_swift:setup" 
+
+  before "swift:setup","nginx_swift:setup"
   before "ruby:setup", "swift:setup"
   before "postgresql:setup", "ruby:setup"
   before "nginx:setup", "postgresql:setup"
@@ -34,38 +34,38 @@ namespace :deploy do
       within release_path do
         execute :rake, 'config:create'
       end
-        within release_path do
-          host = Servers["servers"]["staging"]["db"][0]['ip']
-          execute "echo 'export RACK_ENV=staging' | cat - ~/.bashrc > tmp"
-          execute "mv -f ~/tmp ~/.bashrc"
-          execute "rm -f ~/tmp"
-          execute ". ~/.bashrc"
+      within release_path do
+        host = Servers["servers"]["staging"]["db"][0]['ip']
+        execute "echo 'export RACK_ENV=staging' | cat - ~/.bashrc > tmp"
+        execute "mv -f ~/tmp ~/.bashrc"
+        execute "rm -f ~/tmp"
+        execute ". ~/.bashrc"
 
-          execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
-          execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
-          execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
+        execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
+        execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
+        execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
 
-          execute "cd #{release_path} && sed -i '17s/.*/  username: #{dbuser}/' config/database.yml"
-          execute "cd #{release_path} && sed -i '18s/.*/  password: #{postgresql_pwd}/' config/database.yml"
-          execute "cd #{release_path} && sed -i '19s/.*/  host: #{host}/' config/database.yml"
+        execute "cd #{release_path} && sed -i '17s/.*/  username: #{dbuser}/' config/database.yml"
+        execute "cd #{release_path} && sed -i '18s/.*/  password: #{postgresql_pwd}/' config/database.yml"
+        execute "cd #{release_path} && sed -i '19s/.*/  host: #{host}/' config/database.yml"
 
-        end
+      end
       within release_path do
         execute :rake, 'db:migrate'
         execute :rake, 'db:seed'
-        if "#{deploy_to}".include? "production"
-           execute "ps aux | grep -i rackup | awk {'print $2'} | xargs kill -9"
+        if "#{deploy_to}".include? "production" or "#{deploy_to}".include? "staging"
+          execute "ps aux | grep -i rackup | awk {'print $2'} | xargs kill -9"
         end
 
         execute "cd #{release_path} && nohup rackup -D"
       end
 
-	end
+    end
     on roles(:sinatra) do
       within release_path do
         execute :rake, 'config:create'
       end
-      if "#{deploy_to}".include? "staging"
+      if "#{deploy_to}".include? "fresh"
 
         host = Servers["servers"]["staging"]["db"][0]['ip']
 
@@ -74,23 +74,26 @@ namespace :deploy do
         execute "rm -f ~/tmp"
         execute ". ~/.bashrc"
 
-        execute "cd #{release_path} && sed -i '17s/.*/  username: #{dbuser}/' config/database.yml"
-        execute "cd #{release_path} && sed -i '18s/.*/  password: #{postgresql_pwd}/' config/database.yml"
-        execute "cd #{release_path} && sed -i '19s/.*/  host: #{host}/' config/database.yml"
-
-      elsif "#{deploy_to}".include? "production"
-
-        host = Servers["servers"]["production"]["db"][0]['ip']
+      elsif "#{deploy_to}".include? "production" or "#{deploy_to}".include? "staging"
+        if "#{deploy_to}".include? "production"
+          host = Servers["servers"]["production"]["db"][0]['ip']
+        else
+          host = Servers["servers"]["staging"]["db"][0]['ip']
+        end
 
         execute "echo 'export RACK_ENV=production' | cat - ~/.bashrc > tmp"
         execute "mv -f ~/tmp ~/.bashrc"
         execute "rm -f ~/tmp"
         execute ". ~/.bashrc"
 
+        execute "cd #{release_path} && sed -i '17s/.*/  username: #{dbuser}/' config/database.yml"
+        execute "cd #{release_path} && sed -i '18s/.*/  password: #{postgresql_pwd}/' config/database.yml"
+        execute "cd #{release_path} && sed -i '19s/.*/  host: #{host}/' config/database.yml"
+
         execute "cd #{release_path} && sed -i '25s/.*/  username: #{dbuser}/' config/database.yml"
         execute "cd #{release_path} && sed -i '26s/.*/  password: #{postgresql_pwd}/' config/database.yml"
         execute "cd #{release_path} && sed -i '27s/.*/  host: #{host}/' config/database.yml"
-        
+
       end
 
       execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"

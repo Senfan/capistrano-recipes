@@ -5,7 +5,7 @@ require_relative '../loadinfo/loadinfo_staging'
 
 zone          =  0 
 serverip      =  "0.0.0.0"
-nginxip       = Servers['servers']['staging']['swift-nginx'][0]['ip'] 
+nginxip       = Servers['servers']['staging']['swift-nginx'][0]['ip']
 proxyport     = SwiftInfo['proxyport']
 memcacheport  = SwiftInfo['memcacheport']
 accountport   = SwiftInfo['accountport']
@@ -16,10 +16,10 @@ swift_hosts   = Servers["servers"]["staging"]["swift"]
 
 smemcachedlist = " "
 swift_hosts.each { |host|
-   smemcachedlist = smemcachedlist + "#{host["ip"]}" +":"+memcacheport +","
+    smemcachedlist = smemcachedlist + "#{host["ip"]}" +":"+memcacheport +","
 }
 
-#ring config file 
+#ring config file
 ringString = "#!/bin/bash \\n cd /etc/swift \\n sudo chown -R swift:swift /etc/swift \\n" +
              "sudo rm -f *.builder *.ring.gz backups/*.builder backups/*.ring.gz \\n" +
              "sudo swift-ring-builder object.builder create 10 3 1 \\n" +
@@ -32,23 +32,23 @@ ringString = ringString +"sudo swift-ring-builder object.builder add z#{zone}-#{
                          "sudo swift-ring-builder account.builder add z#{zone}-#{host["ip"]}:6002/sdb1 100 \\n  "
 }
 ringString =ringString + "sudo swift-ring-builder object.builder \\n" +
-                         "sudo swift-ring-builder container.builder  \\n" +
-                         "sudo swift-ring-builder account.builder \\n" + 
-                         "sudo swift-ring-builder object.builder  rebalance \\n " +
-                         "sudo swift-ring-builder container.builder  rebalance \\n" +
-                         "sudo swift-ring-builder account.builder rebalance \\n" 
+"sudo swift-ring-builder container.builder  \\n" +
+"sudo swift-ring-builder account.builder \\n" +
+"sudo swift-ring-builder object.builder  rebalance \\n " +
+"sudo swift-ring-builder container.builder  rebalance \\n" +
+"sudo swift-ring-builder account.builder rebalance \\n"
 
 
 
 namespace :swift do
-   desc "install swift&proxy"
-   task :setup do
-      on roles(:storage) do
-         
-         memcachedlist = smemcachedlist.chop 
-         execute "sudo service memcached stop"
-         execute "sudo service rsync stop"
-         execute "sudo swift-init all stop"
+    desc "install swift&proxy"
+    task :setup do
+        on roles(:storage) do
+            if "#{deploy_to}".include? "fresh"
+                memcachedlist = smemcachedlist.chop
+                execute "sudo service memcached stop"
+                execute "sudo service rsync stop"
+                execute "sudo swift-init all stop"
 
          execute "sudo apt-get -y update"
          execute "sudo apt-get -y install curl gcc memcached rsync sqlite3 " +

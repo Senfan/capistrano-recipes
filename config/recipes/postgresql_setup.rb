@@ -11,7 +11,7 @@ namespace :postgresql do
         subnetwork      = DbInfo['subnetwork']
 
         on roles(:db) do
-            if "#{deploy_to}".include? "staging"
+            if "#{deploy_to}".include? "fresh"
                 execute "sudo apt-get -y install postgresql"
                 execute "sudo /etc/init.d/postgresql stop"
                 execute "sudo  echo -e \"  data_directory = \'/var/lib/postgresql/9.3/main\'\\n" +

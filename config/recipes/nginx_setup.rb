@@ -5,7 +5,7 @@ namespace :nginx do
     task :setup do
         on roles(:nginx) do
             sinatraweblist = ""
-            swiftserverlist = "" 
+            swiftserverlist = ""
             proxyport     = SwiftInfo['proxyport']
             swift_nginx   = ""
             if "#{deploy_to}".include? "production"
@@ -13,15 +13,12 @@ namespace :nginx do
                 sinatrawebp  = Servers['servers']['production']['sinatra']
                 swift_hosts  = Servers["servers"]["production"]["swift"]
                 swift_nginx  =Servers["servers"]["production"]["swift-nginx"][0]["ip"]
-               
+
             elsif "#{deploy_to}".include? "staging"
                 root_path = "staging"
                 sinatrawebp  = Servers['servers']['staging']['sinatra']
                 swift_hosts  = Servers["servers"]["staging"]["swift"]
                 swift_nginx  = Servers["servers"]["staging"]["swift-nginx"][0]["ip"]
-
-                execute "sudo apt-get -y install nginx"
-                execute "sudo /etc/init.d/nginx stop"
             else
                 root_path = "webapp"
                 execute "sudo apt-get -y install nginx"
@@ -29,12 +26,12 @@ namespace :nginx do
             end
 
             sinatrawebp.each { |host|
-               sinatraweblist = sinatraweblist+ "server " + "#{host["ip"]}" +":9292;\\n"
+                sinatraweblist = sinatraweblist+ "server " + "#{host["ip"]}" +":9292;\\n"
             }
             #swift_hosts.each { |host|
             #   swiftserverlist = swiftserverlist +"server "+ "#{host["ip"]}" +":#{proxyport};\\n"
             #}
-            
+
             execute "sudo bash -c \"echo -e 'user www-data; \\n" +
             "worker_processes 4; \\n" +
             "pid /run/nginx.pid;\\n" +
@@ -59,10 +56,10 @@ namespace :nginx do
             "location / {\\n" +
             "proxy_pass  http://webservers/;\\n" +
             "}\\n" +
-			"location /auth/v1.0 {\\n" +
+            "location /auth/v1.0 {\\n" +
             "proxy_pass  http://\"#{swift_nginx}\";\\n" +
             "}\\n" +
-			"location /v1 {\\n" +
+            "location /v1 {\\n" +
             "proxy_pass  http://\"#{swift_nginx}\";\\n" +
             "}\\n" +
             #"location /auth {\\n" +
@@ -81,11 +78,9 @@ namespace :nginx do
             "gzip on;\\n" +
             "gzip_disable 'msie6';\\n" +
             "}\\n'  > /etc/nginx/nginx.conf \"  "
-            
-            if "#{deploy_to}".include? "production"
+
+            if "#{deploy_to}".include? "production" or "#{deploy_to}".include? "staging"
                 execute "sudo service nginx reload"
-            elsif "#{deploy_to}".include? "staging"
-                execute "sudo /etc/init.d/nginx start"
             else
                 execute "sudo /etc/init.d/nginx start"
             end
