@@ -232,7 +232,7 @@ namespace :swift do
          #config ring file for every proxy node 
          execute "echo -e '#{ringString}' > /home/devops/ring.sh"
          execute "sudo chmod +x /home/devops/ring.sh"
-         execute "/home/swift/ring.sh"
+         execute "/home/devops/ring.sh"
          execute "sudo chown -R swift:swift /etc/swift"
          execute "sudo service memcached start"
          execute "sudo service rsync start"
