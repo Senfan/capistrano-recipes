@@ -34,14 +34,14 @@ namespace :deploy do
 	  end
     elsif "#{deploy_to}".include? "production"
 	  on roles(:sinatra) do
-        execute "cd #{deploy_to} && cp config.tar.gz #{release_path}"
-        execute "cd #{release_path} && rm -r config/"
-        execute "cd #{release_path} && tar -zxvf config.tar.gz"
-	  end
-	else
+          execute "cd #{deploy_to} && cp config.tar.gz #{release_path}"
+          execute "cd #{release_path} && rm -r config/"
+          execute "cd #{release_path} && tar -zxvf config.tar.gz"
+	end
+    else
 	  on roles(:all_in_one) do
         within release_path do
-		  execute "echo 'export RACK_ENV=production' | cat - ~/.bashrc > tmp"
+	  execute "echo 'export RACK_ENV=testing' | cat - ~/.bashrc > tmp"
           execute "mv -f ~/tmp ~/.bashrc"
           execute "rm -f ~/tmp"
           execute ". ~/.bashrc"
