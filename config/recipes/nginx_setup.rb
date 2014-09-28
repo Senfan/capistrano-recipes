@@ -64,113 +64,114 @@ namespace :nginx do
             end
           end
         end
+
 	if "#{deploy_to}".include? "testing"
           on roles(:all_in_one) do
-          execute "sudo bash -c \"echo -e 'user www-data; \\n" +
-          "worker_processes 4; \\n" +
-          "pid /run/nginx.pid;\\n" +
-           "events {\\n" +
-           "worker_connections 768;\\n" +
-                "}\\n" +
-                "http {\\n" +
-                "upstream webservers {\\n" + "server 127.0.0.1:9292;\\n" +
-                "}\\n" +
-                #"upstream swiftservers{\\n" + swiftserverlist +
-                #"}\\n" +
-                "server {\\n" +
-                "listen  80; \\n" +
-                "location =/ { \\n" +
-                "root  /home/devops/#{root_path}/current/; \\n" +
-                "index   index.html; \\n" +
-                "} \\n" +
-                "location ~ .*\\.(gif|jpg|jpeg|png|bmp|swf|js|html|htm|css)\$ { \\n" +
-                "root  /home/devops/#{root_path}/current/; \\n" +
-                "}\\n" +
-                "server_name  webservers;\\n" +
-                "location / {\\n" +
-                "proxy_pass  http://webservers/;\\n" +
-                "}\\n" +
-							"location /auth/v1.0 {\\n" +
-				"proxy_pass  http://\"#{swift_host}\";\\n" +
-				"}\\n" +
-				"location /v1 {\\n" +
-				"proxy_pass  http://\"#{swift_host}\";\\n" +
-				"}\\n" +
+            execute "sudo bash -c \"echo -e 'user www-data; \\n" +
+            "worker_processes 4; \\n" +
+            "pid /run/nginx.pid;\\n" +
+            "events {\\n" +
+            "worker_connections 768;\\n" +
+            "}\\n" +
+            "http {\\n" +
+            "upstream webservers {\\n" + "server 127.0.0.1:9292;\\n" +
+            "}\\n" +
+            #"upstream swiftservers{\\n" + swiftserverlist +
+            #"}\\n" +
+            "server {\\n" +
+            "listen  80; \\n" +
+            "location =/ { \\n" +
+            "root  /home/devops/#{root_path}/current/; \\n" +
+            "index   index.html; \\n" +
+            "} \\n" +
+            "location ~ .*\\.(gif|jpg|jpeg|png|bmp|swf|js|html|htm|css)\$ { \\n" +
+            "root  /home/devops/#{root_path}/current/; \\n" +
+            "}\\n" +
+            "server_name  webservers;\\n" +
+            "location / {\\n" +
+            "proxy_pass  http://webservers/;\\n" +
+            "}\\n" +
+	    "location /auth/v1.0 {\\n" +
+	    "proxy_pass  http://\"#{swift_host}\";\\n" +
+	    "}\\n" +
+	    "location /v1 {\\n" +
+	    "proxy_pass  http://\"#{swift_host}\";\\n" +
+	    "}\\n" +
 
-                #"location /auth {\\n" +
-                #"proxy_pass http://swiftservers/;\\n"+
-                #"}\\n" +
-                "}\\n" +
-                "sendfile on;\\n" +
-                "tcp_nopush on;\\n" +
-                "tcp_nodelay on;\\n" +
-                "keepalive_timeout 65;\\n" +
-                "types_hash_max_size 2048;\\n" +
-                "include /etc/nginx/mime.types;\\n" +
-                "default_type application/octet-stream;\\n" +
-                "access_log /var/log/nginx/access.log;\\n" +
-                "error_log /var/log/nginx/error.log;\\n" +
-                "gzip on;\\n" +
-                "gzip_disable 'msie6';\\n" +
-                "}\\n'  > /etc/nginx/nginx.conf \"  "
-               end
-             else
-			  on roles(:nginx) do
-                 execute "sudo bash -c \"echo -e 'user www-data; \\n" +
-                            "worker_processes 4; \\n" +
-                                "pid /run/nginx.pid;\\n" +
-                                "events {\\n" +
-                                "worker_connections 768;\\n" +
-                                "}\\n" +
-                                "http {\\n" +
-                                "upstream webservers {\\n" + sinatraweblist +
-                                "}\\n" +
-                                #"upstream swiftservers{\\n" + swiftserverlist +
-                                #"}\\n" +
-                                "server {\\n" +
-                                "listen  80; \\n" +
-                                "location =/ { \\n" +
-                                "root  /home/devops/#{root_path}/current/; \\n" +
-                                "index   index.html; \\n" +
-                                "} \\n" +
-                                "location ~ .*\\.(gif|jpg|jpeg|png|bmp|swf|js|html|htm|css)\$ { \\n" +
-                                "root  /home/devops/#{root_path}/current/; \\n" +
-                                "}\\n" +
-                                "server_name  webservers;\\n" +
-                                "location / {\\n" +
-                                "proxy_pass  http://webservers/;\\n" +
-                                "}\\n" +
-                                #"location /auth {\\n" +
-                                #"proxy_pass http://swiftservers/;\\n"+
-                                #"}\\n" +
-                                "}\\n" +
-                                "sendfile on;\\n" +
-                                "tcp_nopush on;\\n" +
-                                "tcp_nodelay on;\\n" +
-                                "keepalive_timeout 65;\\n" +
-                                "types_hash_max_size 2048;\\n" +
-                                "include /etc/nginx/mime.types;\\n" +
-                                "default_type application/octet-stream;\\n" +
-                                "access_log /var/log/nginx/access.log;\\n" +
-                                "error_log /var/log/nginx/error.log;\\n" +
-                                "gzip on;\\n" +
-                                "gzip_disable 'msie6';\\n" +
-                                "}\\n'  > /etc/nginx/nginx.conf \"  "
-            end
+            #"location /auth {\\n" +
+            #"proxy_pass http://swiftservers/;\\n"+
+            #"}\\n" +
+            "}\\n" +
+            "sendfile on;\\n" +
+            "tcp_nopush on;\\n" +
+            "tcp_nodelay on;\\n" +
+            "keepalive_timeout 65;\\n" +
+            "types_hash_max_size 2048;\\n" +
+            "include /etc/nginx/mime.types;\\n" +
+            "default_type application/octet-stream;\\n" +
+            "access_log /var/log/nginx/access.log;\\n" +
+            "error_log /var/log/nginx/error.log;\\n" +
+            "gzip on;\\n" +
+            "gzip_disable 'msie6';\\n" +
+            "}\\n'  > /etc/nginx/nginx.conf \"  "
           end
+        else
+	  on roles(:nginx) do
+            execute "sudo bash -c \"echo -e 'user www-data; \\n" +
+            "worker_processes 4; \\n" +
+            "pid /run/nginx.pid;\\n" +
+            "events {\\n" +
+            "worker_connections 768;\\n" +
+            "}\\n" +
+            "http {\\n" +
+            "upstream webservers {\\n" + sinatraweblist +
+            "}\\n" +
+            #"upstream swiftservers{\\n" + swiftserverlist +
+            #"}\\n" +
+            "server {\\n" +
+            "listen  80; \\n" +
+            "location =/ { \\n" +
+            "root  /home/devops/#{root_path}/current/; \\n" +
+            "index   index.html; \\n" +
+            "} \\n" +
+            "location ~ .*\\.(gif|jpg|jpeg|png|bmp|swf|js|html|htm|css)\$ { \\n" +
+            "root  /home/devops/#{root_path}/current/; \\n" +
+            "}\\n" +
+            "server_name  webservers;\\n" +
+            "location / {\\n" +
+            "proxy_pass  http://webservers/;\\n" +
+            "}\\n" +
+            #"location /auth {\\n" +
+            #"proxy_pass http://swiftservers/;\\n"+
+            #"}\\n" +
+            "}\\n" +
+            "sendfile on;\\n" +
+            "tcp_nopush on;\\n" +
+            "tcp_nodelay on;\\n" +
+            "keepalive_timeout 65;\\n" +
+            "types_hash_max_size 2048;\\n" +
+            "include /etc/nginx/mime.types;\\n" +
+            "default_type application/octet-stream;\\n" +
+            "access_log /var/log/nginx/access.log;\\n" +
+            "error_log /var/log/nginx/error.log;\\n" +
+            "gzip on;\\n" +
+            "gzip_disable 'msie6';\\n" +
+            "}\\n'  > /etc/nginx/nginx.conf \"  "
+          end
+        end
 		  
-		   if "#{deploy_to}".include? "production"
-            on roles(:nginx) do
-              execute "sudo service nginx reload"
-            end
-         elsif "#{deploy_to}".include? "staging"
-            on roles(:nginx) do
-              execute "sudo /etc/init.d/nginx start"
-            end
-         else
-            on roles(:all_in_one) do
-              execute "sudo /etc/init.d/nginx start"
-            end
-         end
-       end
+	if "#{deploy_to}".include? "production"
+          on roles(:nginx) do
+            execute "sudo service nginx reload"
+          end
+        elsif "#{deploy_to}".include? "staging"
+          on roles(:nginx) do
+            execute "sudo /etc/init.d/nginx start"
+          end
+        else
+          on roles(:all_in_one) do
+            execute "sudo /etc/init.d/nginx start"
+          end
+        end
+      end
     end
