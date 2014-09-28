@@ -78,7 +78,7 @@ namespace :deploy do
   end
 
   after :publishing, :restart
-
+=begin
   after :restart, :clear_cache do
     if "#{deploy_to}".include? "staging" or "#{deploy_to}".include? "production"
       on roles(:web), in: :groups, limit: 3, wait: 10 do
@@ -86,12 +86,13 @@ namespace :deploy do
           execute :rake, 'cache:clear'
         end
       end
-	else
-	  on roles(:all_in_one), in: :groups, limit: 3, wait: 10 do
+    else
+      on roles(:all_in_one), in: :groups, limit: 3, wait: 10 do
         within release_path do
           execute :rake, 'cache:clear'
         end
       end
     end
   end
+=end
 end
