@@ -1,7 +1,7 @@
 require 'json'
 
 Docker_host    = "10.110.178.112"
-Swift_host	   = "10.110.178.38:8080"
+Swift_host     = "10.110.178.38:8080"
 SSH_port       = "49122"
 WEB_port       = "49180"
 Container_name = "test_container1"
