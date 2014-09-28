@@ -7,9 +7,9 @@ namespace :ruby do
 
   desc "install rbenv, ruby, and bundler"
   task :setup do
-	if "#{deploy_to}".include? "testing"
-           on roles(:all_in_one) do
-             if capture("if [ -d ~/.rbenv ]; then echo 'true'; fi") == ''
+    if "#{deploy_to}".include? "testing"
+       on roles(:all_in_one) do
+         if capture("if [ -d ~/.rbenv ]; then echo 'true'; fi") == ''
            execute "git clone https://github.com/sstephenson/rbenv.git ~/.rbenv"
          else
            execute "cd ~/.rbenv && git pull"
