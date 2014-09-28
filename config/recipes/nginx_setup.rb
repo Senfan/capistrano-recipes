@@ -4,45 +4,44 @@ namespace :nginx do
     desc "install nginx"
     task :setup do
         root_path = ""
+	swift_host = ""
         if "#{deploy_to}".include? "testing"
           on roles(:all_in_one) do
             if "#{deploy_to}".include? "testing0"
                 root_path = "testing0"
+                swift_host  = Servers["servers"]["testing0"]["swift"][0]['ip']
                 sinatraweb1 = Servers['servers']['testing0']['sinatra'][0]['ip']
-                puts "#{sinatraweb1}"
                 execute "sudo apt-get -y install nginx"
                 execute "sudo /etc/init.d/nginx stop"
             elsif "#{deploy_to}".include? "testing1"
                 root_path = "testing1"
+                swift_host  = Servers["servers"]["testing1"]["swift"][0]['ip']
                 sinatraweb1 = Servers['servers']['testing1']['sinatra'][0]['ip']
-                puts "#{sinatraweb1}"
                 execute "sudo apt-get -y install nginx"
                 execute "sudo /etc/init.d/nginx stop"
             elsif "#{deploy_to}".include? "testing2"
                 root_path = "testing2"
+                swift_host  = Servers["servers"]["testing2"]["swift"][0]['ip']
                 sinatraweb1 = Servers['servers']['testing2']['sinatra'][0]['ip']
-                puts "#{sinatraweb1}"
                 execute "sudo apt-get -y install nginx"
                 execute "sudo /etc/init.d/nginx stop"
             elsif "#{deploy_to}".include? "testing3"
                 root_path = "testing3"
-                puts "here"
+                swift_host  = Servers["servers"]["testing3"]["swift"][0]['ip']
                 sinatraweb1 = Servers['servers']['testing3']['sinatra'][0]['ip']
-                puts "#{sinatraweb1}"
                 execute "sudo apt-get -y install nginx"
                 execute "sudo /etc/init.d/nginx stop"
             elsif "#{deploy_to}".include? "testing4"
                 root_path = "testing4"
+                swift_host  = Servers["servers"]["testing4"]["swift"][0]['ip']
                 sinatraweb1 = Servers['servers']['testing4']['sinatra'][0]['ip']
-                puts "#{sinatraweb1}"
                 execute "sudo apt-get -y install nginx"
                 execute "sudo /etc/init.d/nginx stop"
-			else "#{deploy_to}".include? "testingVM"
+	    else "#{deploy_to}".include? "testingVM"
                 root_path = "testingVM"
+		swift_host  = Servers["servers"]["testingVM"]["swift"][0]['ip']
                 sinatraweb1 = Servers['servers']['testingVM']['sinatra'][0]['ip']
-                puts "#{sinatraweb1}"
                 execute "sudo apt-get -y install nginx"
-                puts root_path
                 execute "sudo /etc/init.d/nginx stop"
             end
           end
@@ -65,7 +64,7 @@ namespace :nginx do
             end
           end
         end
-		if "#{deploy_to}".include? "testing"
+	if "#{deploy_to}".include? "testing"
           on roles(:all_in_one) do
           execute "sudo bash -c \"echo -e 'user www-data; \\n" +
           "worker_processes 4; \\n" +
@@ -91,6 +90,13 @@ namespace :nginx do
                 "location / {\\n" +
                 "proxy_pass  http://webservers/;\\n" +
                 "}\\n" +
+							"location /auth/v1.0 {\\n" +
+				"proxy_pass  http://\"#{swift_host}\";\\n" +
+				"}\\n" +
+				"location /v1 {\\n" +
+				"proxy_pass  http://\"#{swift_host}\";\\n" +
+				"}\\n" +
+
                 #"location /auth {\\n" +
                 #"proxy_pass http://swiftservers/;\\n"+
                 #"}\\n" +

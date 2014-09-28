@@ -10,7 +10,7 @@ namespace :postgresql do
         webappdb        = DbInfo['dbname']
         subnetwork      = DbInfo['subnetwork']
 		
-		
+		  
           on roles(:db) do
             if "#{deploy_to}".include? "staging"
                 execute "sudo apt-get -y install postgresql"
@@ -42,8 +42,8 @@ namespace :postgresql do
                 execute "sudo -u postgres createdb -O #{dbuser} #{webappdb}"
                 execute "sudo -u postgres  psql -h 127.0.0.1 -p 5432 -c \"alter user #{dbuser}  password '#{postgresql_pwd}';\" "
                 execute "sudo /etc/init.d/postgresql restart"
-            end
-        end
+              end
+		  end
 	  end
 end
 

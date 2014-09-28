@@ -1,6 +1,7 @@
 require 'json'
 
 Docker_host    = "10.110.178.112"
+Swift_host     = "10.110.178.38:8080"
 SSH_port       = "49322"
 WEB_port       = "49380"
 Container_name = "test_container3"
@@ -11,6 +12,7 @@ Servers     = JSON.parse(server_info)
 Servers["servers"]["testing3"]["nginx"][0]["ip"]   = Docker_host + ":" + SSH_port
 Servers["servers"]["testing3"]["sinatra"][0]["ip"] = Docker_host + ":" + SSH_port
 Servers["servers"]["testing3"]["db"][0]["ip"]      = Docker_host + ":" + SSH_port
+Servers["servers"]["testing3"]["swift"][0]["ip"]   = Swift_host
 
 File.open('./config/config_file/server.json', 'w') do |f|
         f.write(Servers.to_json)

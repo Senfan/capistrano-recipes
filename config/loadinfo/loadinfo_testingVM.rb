@@ -12,6 +12,8 @@ Servers     = JSON.parse(server_info)
 Servers["servers"]["testingVM"]["nginx"][0]["ip"]   = Docker_host + ":" + SSH_port
 Servers["servers"]["testingVM"]["sinatra"][0]["ip"] = Docker_host + ":" + SSH_port
 Servers["servers"]["testingVM"]["db"][0]["ip"]      = Docker_host + ":" + SSH_port
+Servers["servers"]["testingVM"]["swift"][0]["ip"]   = Swift_host
+
 
 File.open('./config/config_file/server.json', 'w') do |f|
         f.write(Servers.to_json)
