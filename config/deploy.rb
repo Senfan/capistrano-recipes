@@ -22,7 +22,7 @@ namespace :deploy do
 
   task :dbsetup do
     if "#{deploy_to}".include? "staging"
-	  on roles(:sinatra) do
+      on roles(:sinatra) do
         within release_path do
           execute :rake, 'config:create'
           execute :rake, 'db:migrate'
@@ -31,15 +31,15 @@ namespace :deploy do
           execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
           execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
         end
-	  end
+      end
     elsif "#{deploy_to}".include? "production"
-	  on roles(:sinatra) do
+        on roles(:sinatra) do
           execute "cd #{deploy_to} && cp config.tar.gz #{release_path}"
           execute "cd #{release_path} && rm -r config/"
           execute "cd #{release_path} && tar -zxvf config.tar.gz"
 	end
     else
-	  on roles(:all_in_one) do
+      on roles(:all_in_one) do
         within release_path do
 	  execute "echo 'export RACK_ENV=testing' | cat - ~/.bashrc > tmp"
           execute "mv -f ~/tmp ~/.bashrc"
@@ -52,7 +52,7 @@ namespace :deploy do
           execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
           execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
         end
-	  end
+      end
     end
   end
 
@@ -61,20 +61,20 @@ namespace :deploy do
   
   desc 'Restart application'
   task :restart do
-	if "#{deploy_to}".include? "staging" or "#{deploy_to}".include? "production"
-	  on roles(:sinatra), in: :sequence, wait: 5 do
+    if "#{deploy_to}".include? "staging" or "#{deploy_to}".include? "production"
+      on roles(:sinatra), in: :sequence, wait: 5 do
         if "#{deploy_to}".include? "production"
           execute "ps aux | grep -i rackup | awk {'print $2'} | xargs kill -9"
         end
         execute "cd #{release_path} && nohup rackup -D"
         execute "echo 'done'"
       end
-	else
-	  on roles(:all_in_one), in: :sequence, wait: 5 do
-	    execute "cd #{release_path} && nohup rackup -D"
+    else
+      on roles(:all_in_one), in: :sequence, wait: 5 do
+        execute "cd #{release_path} && nohup rackup -D"
         execute "echo 'done'"
-	  end
-	end
+      end
+    end
   end
 
   after :publishing, :restart
