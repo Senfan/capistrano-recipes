@@ -4,7 +4,7 @@
       "nginx": [
         {
           "server_name": "nginx-server-production",
-          "ip": "10.110.178.30"
+          "ip": "10.110.178.51"
         }
       ],
       "sinatra": [
@@ -91,6 +91,50 @@
       "db": [
         {
           "server_name": "db-node-staging",
+          "ip": "10.110.178.30"
+        }
+      ]
+    },
+    "fresh": {
+      "nginx": [
+        {
+          "server_name": "nginx-server",
+          "ip": "10.110.178.26"
+        }
+      ],
+      "sinatra": [
+        {
+          "server_name": "sinatra-node-1",
+          "ip": "10.110.178.28"
+        },
+        {
+          "server_name": "sinatra-node-2",
+          "ip": "10.110.178.32"
+        }
+      ],
+      "swift-nginx": [
+        {
+          "server_name": "swift-ngin",
+          "ip": "10.110.178.37"
+        }
+      ],
+      "swift": [
+        {
+          "server_name": "swift-demo-1",
+          "ip": "10.110.178.29"
+        },
+        {
+          "server_name": "swift-demo-1",
+          "ip": "10.110.178.22"
+        },
+        {
+          "server_name": "swift-demo-1",
+          "ip": "10.110.178.45"
+        }
+      ],
+      "db": [
+        {
+          "server_name": "db-node",
           "ip": "10.110.178.30"
         }
       ]
