@@ -3,7 +3,6 @@ require_relative "../loadinfo/loadinfo_testing0"
 
 user          = 'devops'
 set :deploy_to, "/home/#{user}/testing0"
-set :repo_url, 'git@github.com:/teddy-hoo/newhire-1'
 
 nginx_hosts   = Servers["servers"]["testing0"]["nginx"]
 sinatra_hosts = Servers["servers"]["testing0"]["sinatra"]
