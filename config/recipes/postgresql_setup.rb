@@ -9,10 +9,8 @@ namespace :postgresql do
         postgresql_pwd  = DbInfo['password'].gsub('$','\$')
         webappdb        = DbInfo['dbname']
         subnetwork      = DbInfo['subnetwork']
-		
-		  
-          on roles(:db) do
-            if "#{deploy_to}".include? "staging"
+        on roles(:db) do
+            if "#{deploy_to}".include? "fresh"
                 execute "sudo apt-get -y install postgresql"
                 execute "sudo /etc/init.d/postgresql stop"
                 execute "sudo  echo -e \"  data_directory = \'/var/lib/postgresql/9.3/main\'\\n" +
@@ -42,8 +40,8 @@ namespace :postgresql do
                 execute "sudo -u postgres createdb -O #{dbuser} #{webappdb}"
                 execute "sudo -u postgres  psql -h 127.0.0.1 -p 5432 -c \"alter user #{dbuser}  password '#{postgresql_pwd}';\" "
                 execute "sudo /etc/init.d/postgresql restart"
-              end
-		  end
-	  end
+            end
+	end
+    end
 end
 

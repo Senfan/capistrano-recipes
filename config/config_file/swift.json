@@ -1,0 +1,7 @@
+{
+     "proxyport"      : "8080",
+     "memcacheport"   : "6005",
+     "accountport"    : "6002",
+     "containerport"  : "6001",
+     "objectport"     : "6000"
+}

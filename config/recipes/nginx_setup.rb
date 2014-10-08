@@ -47,16 +47,21 @@ namespace :nginx do
           end
         else
           on roles(:nginx) do
+            sinatraweblist = ""
+            swiftserverlist = ""
+            proxyport     = SwiftInfo['proxyport']
+            swift_nginx   = ""
             if "#{deploy_to}".include? "production"
-                root_path = "production"
-                sinatraweb1 = Servers['servers']['production']['sinatra'][0]['ip']
-                sinatraweb2 = Servers['servers']['production']['sinatra'][1]['ip']
+                root_path    = "production"
+                sinatrawebp  = Servers['servers']['production']['sinatra']
+                swift_hosts  = Servers["servers"]["production"]["swift"]
+                swift_nginx  =Servers["servers"]["production"]["swift-nginx"][0]["ip"]
+
             elsif "#{deploy_to}".include? "staging"
                 root_path = "staging"
-                sinatraweb1 = Servers['servers']['staging']['sinatra'][0]['ip']
-                sinatraweb2 = Servers['servers']['staging']['sinatra'][1]['ip']
-                execute "sudo apt-get -y install nginx"
-                execute "sudo /etc/init.d/nginx stop"
+                sinatrawebp  = Servers['servers']['staging']['sinatra']
+                swift_hosts  = Servers["servers"]["staging"]["swift"]
+                swift_nginx  = Servers["servers"]["staging"]["swift-nginx"][0]["ip"]
             else
                 root_path = "webapp"
                 execute "sudo apt-get -y install nginx"
@@ -67,7 +72,7 @@ namespace :nginx do
 
 	if "#{deploy_to}".include? "testing"
           on roles(:all_in_one) do
-            execute "sudo bash -c \"echo -e 'user www-data; \\n" +
+           execute "sudo bash -c \"echo -e 'user www-data; \\n" +
             "worker_processes 4; \\n" +
             "pid /run/nginx.pid;\\n" +
             "events {\\n" +
@@ -116,6 +121,12 @@ namespace :nginx do
             "}\\n'  > /etc/nginx/nginx.conf \"  "
           end
         else
+          sinatrawebp.each { |host|
+                sinatraweblist = sinatraweblist+ "server " + "#{host["ip"]}" +":9292;\\n"
+            }
+            #swift_hosts.each { |host|
+            #   swiftserverlist = swiftserverlist +"server "+ "#{host["ip"]}" +":#{proxyport};\\n"
+            #}
 	  on roles(:nginx) do
             execute "sudo bash -c \"echo -e 'user www-data; \\n" +
             "worker_processes 4; \\n" +
@@ -140,6 +151,12 @@ namespace :nginx do
             "server_name  webservers;\\n" +
             "location / {\\n" +
             "proxy_pass  http://webservers/;\\n" +
+            "}\\n" + 
+            "location /auth/v1.0 {\\n" +
+            "proxy_pass  http://\"#{swift_nginx}\";\\n" +
+            "}\\n" +
+            "location /v1 {\\n" +
+            "proxy_pass  http://\"#{swift_nginx}\";\\n" +
             "}\\n" +
             #"location /auth {\\n" +
             #"proxy_pass http://swiftservers/;\\n"+
@@ -159,19 +176,15 @@ namespace :nginx do
             "}\\n'  > /etc/nginx/nginx.conf \"  "
           end
         end
-		  
-	if "#{deploy_to}".include? "production"
+
+        if "#{deploy_to}".include? "production" or "#{deploy_to}".include? "staging"
           on roles(:nginx) do
             execute "sudo service nginx reload"
-          end
-        elsif "#{deploy_to}".include? "staging"
-          on roles(:nginx) do
-            execute "sudo /etc/init.d/nginx start"
           end
         else
           on roles(:all_in_one) do
             execute "sudo /etc/init.d/nginx start"
           end
         end
-      end
     end
+end
