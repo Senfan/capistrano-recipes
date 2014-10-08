@@ -64,7 +64,8 @@ namespace :swift do
                  "swift_hash_path_prefix = `od -t x8 -N 8 -A n </dev/random` \\n" +
                  "swift_hash_path_suffix = `od -t x8 -N 8 -A n </dev/random`\\n ' " +
                  "> ~/swift.conf "
-         execute "sudo cp ~/swift.conf /etc/swift/"
+        	end 
+	execute "sudo cp ~/swift.conf /etc/swift/"
          execute "sudo mkdir -p /var/run/swift"
          execute "sudo chown swift:swift /var/run/swift"
          execute "sudo mkdir -p /var/cache/swift /srv/node/"
