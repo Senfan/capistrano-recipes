@@ -1,6 +1,6 @@
 require 'json'
 
-set :repo_url, 'git@github.com:/teddy-hoo/newhire-1'
+set :repo_url, 'git@github.com:/Senfan/newhire'
 Docker_host    = "10.110.178.112"
 Swift_host     = "10.110.178.38:8080"
 SSH_port       = "49322"
