@@ -3,6 +3,7 @@
 
 require_relative '../loadinfo/loadinfo_staging'
 
+zone          =  0
 serverip      =  "0.0.0.0"
 nginxip       = Servers['servers']['staging']['swift-nginx'][0]['ip']
 proxyport     = SwiftInfo['proxyport']
@@ -25,9 +26,10 @@ ringString = "#!/bin/bash \\n cd /etc/swift \\n sudo chown -R swift:swift /etc/s
 "sudo swift-ring-builder container.builder create 10 3 1 \\n" +
 "sudo swift-ring-builder account.builder create 10 3 1 \\n  "
 swift_hosts.each { |host|
-    ringString = ringString +"sudo swift-ring-builder object.builder add z1-#{host["ip"]}:6000/sdb1 100 \\n" +
-    "sudo swift-ring-builder container.builder add z1-#{host["ip"]}:6001/sdb1 100 \\n" +
-    "sudo swift-ring-builder account.builder add z1-#{host["ip"]}:6002/sdb1 100 \\n  "
+    zone=zone+1
+    ringString = ringString +"sudo swift-ring-builder object.builder add z#{zone}-#{host["ip"]}:6000/sdb1 100 \\n" +
+    "sudo swift-ring-builder container.builder add z#{zone}-#{host["ip"]}:6001/sdb1 100 \\n" +
+    "sudo swift-ring-builder account.builder add z#{zone}-#{host["ip"]}:6002/sdb1 100 \\n  "
 }
 ringString =ringString + "sudo swift-ring-builder object.builder \\n" +
 "sudo swift-ring-builder container.builder  \\n" +
@@ -61,10 +63,11 @@ namespace :swift do
                 execute "sudo mkdir -p /etc/swift"
                 execute "sudo chown -R swift:swift /etc/swift/"
                 execute "sudo  echo -e '[swift-hash] \\n \\n" +
+                "swift_hash_path_prefix = `od -t x8 -N 8 -A n </dev/random` \\n" +
+                "swift_hash_path_suffix = `od -t x8 -N 8 -A n </dev/random`\\n ' " +
+                "> ~/swift.conf "
             end
-            "swift_hash_path_prefix = `od -t x8 -N 8 -A n </dev/random` \\n" +
-            "swift_hash_path_suffix = `od -t x8 -N 8 -A n </dev/random`\\n ' " +
-            "> ~/swift.conf "
+
             execute "sudo cp ~/swift.conf /etc/swift/"
             execute "sudo mkdir -p /var/run/swift"
             execute "sudo chown swift:swift /var/run/swift"
@@ -161,6 +164,8 @@ namespace :swift do
             "> /etc/swift/object-expirer.conf  \" "
             #or sudo perl -pi -e 's/memcache_servers = 0.0.0.0/
             #   memcache_servers = #{memcahediplist}/' /etc/swift/object-expirer.conf
+            execute "sudo apt-get -y install swift python-swiftclient openssh-server " +
+            "rsync  swift-proxy memcached swift-account swift-container swift-object xfsprogs "
             execute "sudo perl -pi -e \"s/-l 127.0.0.1/-l #{serverip}/\" /etc/memcached.conf"
             execute "sudo perl -pi -e \"s/-p 11211/-p #{memcacheport}/\" /etc/memcached.conf"
             execute "sudo bash -c \" echo -e '[DEFAULT]\\n" +
@@ -196,7 +201,8 @@ namespace :swift do
             "[filter:tempauth] \\n" +
             "use = egg:swift#tempauth \\n" +
             "user_admin_admin = admin .admin .reseller_admin \\n" +
-            "user_heying_heying = ca\\$hc0w .admin http://#{nginxip}/v1/AUTH_system \\n" +
+            "user_newhire_newhire = newhirepwd .admin http://#{nginxip}/v1/AUTH_system \\n" +
+            "user_heying_heying = ca\\$hc0w    .admin http://#{nginxip}/v1/AUTH_system \\n" +
             "user_test2_tester2 = testing2 .admin \\n" +
             "user_test_tester3 = testing3 \\n" +
             "#set the token_life time   default 86400\\n" +
