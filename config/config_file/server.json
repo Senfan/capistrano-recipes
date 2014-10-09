@@ -20,7 +20,7 @@
       "swift-nginx": [
         {
           "server_name": "swift-nginx-production",
-          "ip": ""
+          "ip": "10.110.178.38:8080"
         }
       ],
       "swift": [
@@ -99,43 +99,43 @@
       "nginx": [
         {
           "server_name": "nginx-server",
-          "ip": "10.110.178.26"
+          "ip": ""
         }
       ],
       "sinatra": [
         {
           "server_name": "sinatra-node-1",
-          "ip": "10.110.178.28"
+          "ip": ""
         },
         {
           "server_name": "sinatra-node-2",
-          "ip": "10.110.178.32"
+          "ip": ""
         }
       ],
       "swift-nginx": [
         {
           "server_name": "swift-ngin",
-          "ip": "10.110.178.37"
+          "ip": ""
         }
       ],
       "swift": [
         {
           "server_name": "swift-demo-1",
-          "ip": "10.110.178.29"
+          "ip": ""
         },
         {
           "server_name": "swift-demo-1",
-          "ip": "10.110.178.22"
+          "ip": ""
         },
         {
           "server_name": "swift-demo-1",
-          "ip": "10.110.178.45"
+          "ip": ""
         }
       ],
       "db": [
         {
           "server_name": "db-node",
-          "ip": "10.110.178.30"
+          "ip": ""
         }
       ]
     }
