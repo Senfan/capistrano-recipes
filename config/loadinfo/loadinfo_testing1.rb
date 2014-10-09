@@ -1,6 +1,6 @@
 require 'json'
 
-set :repo_url, 'git@github.com:/teddy-hoo/newhire-1'
+set :repo_url, 'git@github.com:/rogerluo410/newhire'
 Docker_host    = "10.110.178.112"
 Swift_host     = "10.110.178.38:8080"
 SSH_port       = "49122"
@@ -8,7 +8,7 @@ WEB_port       = "49180"
 Container_name = "test_container1"
 Docker_image   = "test_image_from_dockerfile"
 SSHKey_path_DH = "/home/newhire/dockerfile/gitKeys/"
-Key_name       = "id_rsa"
+Key_name       = "id_rsa1"
 
 server_info = File.read('./config/config_file/server.json')
 Servers     = JSON.parse(server_info)

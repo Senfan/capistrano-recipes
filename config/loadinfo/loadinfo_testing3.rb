@@ -8,7 +8,7 @@ WEB_port       = "49380"
 Container_name = "test_container3"
 Docker_image   = "test_image_from_dockerfile"
 SSHKey_path_DH = "/home/newhire/dockerfile/gitKeys/"
-Key_name       = "id_rsa"
+Key_name       = "id_rsa3"
 
 server_info = File.read('./config/config_file/server.json')
 Servers     = JSON.parse(server_info)
