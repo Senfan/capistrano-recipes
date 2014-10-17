@@ -27,13 +27,7 @@ namespace :deploy do
 
 
 
-  desc 'install mq'
-  task :start do
-        on roles(:rabbitmq), in: :sequence,wait: 5 do
-                execute "sudo apt-get -y install rabbitmq-server"
-        end
-  end
-  
+ 
   task :dbsetup do
     dbuser         = DbInfo['username']
     postgresql_pwd = DbInfo['password'].gsub('$','\$')
