@@ -1,4 +1,5 @@
-require_relative '../loadinfo/loadinfo_staging'
+require_relative '../loadinfo/loadinfo_fresh'
+
 
 user                = 'devops'
 nginx_hosts         = Servers["servers"]["fresh"]["nginx"]
@@ -7,8 +8,8 @@ db_hosts            = Servers["servers"]["fresh"]["db"]
 swift_hosts         = Servers["servers"]["fresh"]["swift"]
 swift_nginx_hosts   = Servers["servers"]["fresh"]["swift-nginx"]
 
-
 set :deploy_to, "/home/#{user}/fresh"
+
 swift_hosts.each { |host| 
    server "#{host['ip']}", user: "#{user}", roles: %w{storage}, no_release: true
 }

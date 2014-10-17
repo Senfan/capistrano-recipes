@@ -1,6 +1,8 @@
 require 'json'
 require_relative './vm_access'
 
+puts "staging"
+
 server_info = File.read('./config/config_file/server.json')
 Servers     = JSON.parse(server_info)
 

@@ -1,6 +1,8 @@
 require 'json'
 require_relative './vm_access'
 
+puts "load fresh"
+
 server_info = File.read('./config/config_file/server.json')
 Servers     = JSON.parse(server_info)
 
