@@ -13,6 +13,11 @@ namespace :nginx_swift do
             elsif "#{deploy_to}".include? "staging"
                 root_path = "staging"
                 swift_hosts   = Servers["servers"]["staging"]["swift"]
+            elsif "#{deploy_to}".include? "fresh"
+                root_path = "fresh"
+                swift_hosts   = Servers["servers"]["fresh"]["swift"]
+                execute "sudo apt-get -y install nginx"
+                execute "sudo /etc/init.d/nginx stop"
             else
                 root_path = "webapp"
                 execute "sudo apt-get -y install nginx"

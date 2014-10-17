@@ -12,6 +12,9 @@ namespace :postgresql do
 
         on roles(:db) do
             if "#{deploy_to}".include? "fresh"
+                puts dbuser 
+                puts postgresql_pwd 
+                puts webappdb
                 execute "sudo apt-get -y install postgresql"
                 execute "sudo /etc/init.d/postgresql stop"
                 execute "sudo  echo -e \"  data_directory = \'/var/lib/postgresql/9.3/main\'\\n" +

@@ -1,18 +1,18 @@
 #for role:
 # => swift-nginx
 
-require_relative '../loadinfo/loadinfo_staging'
+require_relative '../loadinfo/loadinfo_fresh'
 
 zone          =  0
 serverip      =  "0.0.0.0"
-nginxip       = Servers['servers']['staging']['swift-nginx'][0]['ip']
+nginxip       = Servers['servers']['fresh']['swift-nginx'][0]['ip']
 proxyport     = SwiftInfo['proxyport']
 memcacheport  = SwiftInfo['memcacheport']
 accountport   = SwiftInfo['accountport']
 containerport = SwiftInfo['containerport']
 objectport    = SwiftInfo['objectport']
 
-swift_hosts   = Servers["servers"]["staging"]["swift"]
+swift_hosts   = Servers["servers"]["fresh"]["swift"]
 
 smemcachedlist = " "
 swift_hosts.each { |host|

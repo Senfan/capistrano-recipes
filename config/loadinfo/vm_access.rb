@@ -12,7 +12,7 @@ class VmAccess
       @cluster_name = cluster
       @vm_source    = ['ubuntu14.04_template','Swift-Template-release']
       @server_list  = ['nginx','sinatra','db','swift','swift-nginx']
-      @env_list     = ['staging','testing']
+      @env_list     = ['fresh','testing']
       @threads      = []
       connect_vcenter(host,user,psd)
   end #initialize
@@ -42,8 +42,10 @@ class VmAccess
          @server_list.each do | server |
           @threads << Thread.new do
            servers_json['servers'][env][server].map { | entity |
+           # puts entity
              vm = @vim.serviceInstance.find_datacenter.find_vm(entity['server_name'])
              if vm != nil 
+              # puts vm
               vm.PowerOffVM_Task.wait_for_completion
               vm.Destroy_Task.wait_for_completion    
               puts "'" + entity['server_name'].to_s + "' has been removed!"
@@ -98,7 +100,7 @@ class VmAccess
  
       #Get IP address for each vm 
       puts 'Start to get IP address for each vms...'
-      sleep 150
+      sleep 500
       @env_list.each do | env |
          @server_list.each do | server |
             servers_json['servers'][env][server].map { | entity |

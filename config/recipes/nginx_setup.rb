@@ -19,6 +19,13 @@ namespace :nginx do
                 sinatrawebp  = Servers['servers']['staging']['sinatra']
                 swift_hosts  = Servers["servers"]["staging"]["swift"]
                 swift_nginx  = Servers["servers"]["staging"]["swift-nginx"][0]["ip"]
+            elsif "#{deploy_to}".include? "fresh"
+                root_path = "fresh"
+                sinatrawebp  = Servers['servers']['fresh']['sinatra']
+                swift_hosts  = Servers["servers"]["fresh"]["swift"]
+                swift_nginx  = Servers["servers"]["fresh"]["swift-nginx"][0]["ip"]
+                execute "sudo apt-get -y install nginx"
+                execute "sudo /etc/init.d/nginx stop"
             else
                 root_path = "webapp"
                 execute "sudo apt-get -y install nginx"

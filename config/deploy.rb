@@ -25,6 +25,15 @@ namespace :deploy do
   before "nginx:setup", "postgresql:setup"
   before "deploy", "nginx:setup"
 
+
+
+  desc 'install mq'
+  task :start do
+        on roles(:rabbitmq), in: :sequence,wait: 5 do
+                execute "sudo apt-get -y install rabbitmq-server"
+        end
+  end
+  
   task :dbsetup do
     dbuser         = DbInfo['username']
     postgresql_pwd = DbInfo['password'].gsub('$','\$')
@@ -35,8 +44,18 @@ namespace :deploy do
         execute :rake, 'config:create'
       end
       within release_path do
-        host = Servers["servers"]["staging"]["db"][0]['ip']
-        execute "echo 'export RACK_ENV=staging' | cat - ~/.bashrc > tmp"
+	if "#{deploy_to}".include? "production" or "#{deploy_to}".include? "fresh"
+           host = Servers["servers"]["production"]["db"][0]['ip']           
+           execute "echo 'export RACK_ENV=production' | cat - ~/.bashrc > tmp"
+        end
+        if "#{deploy_to}".include? "fresh"
+           host = Servers["servers"]["fresh"]["db"][0]['ip']
+           execute "echo 'export RACK_ENV=staging' | cat - ~/.bashrc > tmp"
+        end
+        if "#{deploy_to}".include? "staging"
+           host = Servers["servers"]["staging"]["db"][0]['ip']
+           execute "echo 'export RACK_ENV=staging' | cat - ~/.bashrc > tmp"
+        end
         execute "mv -f ~/tmp ~/.bashrc"
         execute "rm -f ~/tmp"
         execute ". ~/.bashrc"
@@ -44,7 +63,7 @@ namespace :deploy do
         execute "cd #{release_path} && sed -i '7s/.*/  host: ldap.vmware.com/' config/config.yml"
         execute "cd #{release_path} && sed -i '8s/.*/  port: 389/' config/config.yml"
         execute "cd #{release_path} && sed -i '9s/.*/  base: dc=vmware,dc=com/' config/config.yml"
-
+       
         execute "cd #{release_path} && sed -i '17s/.*/  username: #{dbuser}/' config/database.yml"
         execute "cd #{release_path} && sed -i '18s/.*/  password: #{postgresql_pwd}/' config/database.yml"
         execute "cd #{release_path} && sed -i '19s/.*/  host: #{host}/' config/database.yml"
@@ -53,7 +72,7 @@ namespace :deploy do
       within release_path do
         execute :rake, 'db:migrate'
         execute :rake, 'db:seed'
-        if "#{deploy_to}".include? "production" or "#{deploy_to}".include? "staging"
+        if "#{deploy_to}".include? "production" or "#{deploy_to}".include? "staging" or "#{deploy_to}".include? "fresh"
           execute "ps aux | grep -i rackup | awk {'print $2'} | xargs kill -9"
         end
 
@@ -65,20 +84,14 @@ namespace :deploy do
       within release_path do
         execute :rake, 'config:create'
       end
-      if "#{deploy_to}".include? "fresh"
 
-        host = Servers["servers"]["staging"]["db"][0]['ip']
-
-        execute "echo 'export RACK_ENV=staging' | cat - ~/.bashrc > tmp"
-        execute "mv -f ~/tmp ~/.bashrc"
-        execute "rm -f ~/tmp"
-        execute ". ~/.bashrc"
-
-      elsif "#{deploy_to}".include? "production" or "#{deploy_to}".include? "staging"
+      if "#{deploy_to}".include? "production" or "#{deploy_to}".include? "staging" or "#{deploy_to}".include? "fresh"
         if "#{deploy_to}".include? "production"
           host = Servers["servers"]["production"]["db"][0]['ip']
-        else
+        elsif "#{deploy_to}".include? "staging"
           host = Servers["servers"]["staging"]["db"][0]['ip']
+        else "#{deploy_to}".include? "fresh"
+          host = Servers["servers"]["fresh"]["db"][0]['ip']
         end
 
         execute "echo 'export RACK_ENV=production' | cat - ~/.bashrc > tmp"
